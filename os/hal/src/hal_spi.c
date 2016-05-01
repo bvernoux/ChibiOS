@@ -81,6 +81,27 @@ void spiObjectInit(SPIDriver *spip) {
 }
 
 /**
+ * @brief   Configures and activates the SPI Slave peripheral.
+ *
+ * @param[in] spip      pointer to the @p SPIDriver object
+ * @param[in] config    pointer to the @p SPIConfig object
+ *
+ * @api
+ */
+void spiSlaveStart(SPIDriver *spip, const SPIConfig *config) {
+
+  osalDbgCheck((spip != NULL) && (config != NULL));
+
+  osalSysLock();
+  osalDbgAssert((spip->state == SPI_STOP) || (spip->state == SPI_READY),
+                "invalid state");
+  spip->config = config;
+  spi_slave_lld_start(spip);
+  spip->state = SPI_READY;
+  osalSysUnlock();
+}
+
+/**
  * @brief   Configures and activates the SPI peripheral.
  *
  * @param[in] spip      pointer to the @p SPIDriver object

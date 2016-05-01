@@ -294,6 +294,155 @@ void spi_lld_init(void) {
 }
 
 /**
+ * @brief   Configures and activates the SPI peripheral in Slave Mode.
+ *
+ * @param[in] spip      pointer to the @p SPIDriver object
+ *
+ * @notapi
+ */
+void spi_slave_lld_start(SPIDriver *spip) 
+{
+#if STM32_SPI_USE_SPI1
+/* Overload Init on SPI1 (remove interrupt event) 
+ Configured as CIRCULAR BUFFER & Double Buffer
+*/
+    SPID1.spi       = SPI1;
+    SPID1.dmarx     = STM32_DMA_STREAM(STM32_SPI_SPI1_RX_DMA_STREAM);
+    SPID1.dmatx     = STM32_DMA_STREAM(STM32_SPI_SPI1_TX_DMA_STREAM);
+    SPID1.rxdmamode = STM32_DMA_CR_CHSEL(SPI1_RX_DMA_CHANNEL) |
+                      STM32_DMA_CR_PL(STM32_SPI_SPI1_DMA_PRIORITY) |
+                      STM32_DMA_CR_DIR_P2M | STM32_DMA_CR_CIRC | DMA_SxCR_DBM;
+    SPID1.txdmamode = STM32_DMA_CR_CHSEL(SPI1_TX_DMA_CHANNEL) |
+                      STM32_DMA_CR_PL(STM32_SPI_SPI1_DMA_PRIORITY) |
+                      STM32_DMA_CR_DIR_M2P;
+#endif
+  /* If in stopped state then enables the SPI and DMA clocks.*/
+  if (spip->state == SPI_STOP) {
+#if STM32_SPI_USE_SPI1
+    if (&SPID1 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI1_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI1_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI1(FALSE);
+    }
+#endif
+#if STM32_SPI_USE_SPI2
+    if (&SPID2 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI2_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI2_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI2(FALSE);
+    }
+#endif
+#if STM32_SPI_USE_SPI3
+    if (&SPID3 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI3_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI3_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI3(FALSE);
+    }
+#endif
+#if STM32_SPI_USE_SPI4
+    if (&SPID4 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI4_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI4_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI4(FALSE);
+    }
+#endif
+#if STM32_SPI_USE_SPI5
+    if (&SPID5 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI5_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI5_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI5(FALSE);
+    }
+#endif
+#if STM32_SPI_USE_SPI6
+    if (&SPID6 == spip) {
+      bool b;
+      b = dmaStreamAllocate(spip->dmarx,
+                            STM32_SPI_SPI6_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_rx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      b = dmaStreamAllocate(spip->dmatx,
+                            STM32_SPI_SPI6_IRQ_PRIORITY,
+                            (stm32_dmaisr_t)spi_lld_serve_tx_interrupt,
+                            (void *)spip);
+      osalDbgAssert(!b, "stream already allocated");
+      rccEnableSPI6(FALSE);
+    }
+#endif
+    /* DMA setup.*/
+    dmaStreamSetPeripheral(spip->dmarx, &spip->spi->DR);
+    dmaStreamSetPeripheral(spip->dmatx, &spip->spi->DR);
+  }
+
+  /* Configuration-specific DMA setup.*/
+  if ((spip->config->cr1 & SPI_CR1_DFF) == 0) {
+    /* Frame width is 8 bits or smaller.*/
+    spip->rxdmamode = (spip->rxdmamode & ~STM32_DMA_CR_SIZE_MASK) |
+                      STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MSIZE_BYTE;
+    spip->txdmamode = (spip->txdmamode & ~STM32_DMA_CR_SIZE_MASK) |
+                      STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MSIZE_BYTE;
+  }
+  else {
+    /* Frame width is larger than 8 bits.*/
+    spip->rxdmamode = (spip->rxdmamode & ~STM32_DMA_CR_SIZE_MASK) |
+                      STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD;
+    spip->txdmamode = (spip->txdmamode & ~STM32_DMA_CR_SIZE_MASK) |
+                      STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD;
+  }
+  /* SPI setup and enable.*/
+  spip->spi->CR1  = 0;
+  spip->spi->CR1  = spip->config->cr1 | SPI_CR1_SSM /* |
+                    SPI_CR1_SSI */;
+  spip->spi->CR2  = SPI_CR2_SSOE | SPI_CR2_RXDMAEN | SPI_CR2_TXDMAEN;
+  spip->spi->CR1 |= SPI_CR1_SPE;
+}
+
+/**
  * @brief   Configures and activates the SPI peripheral.
  *
  * @param[in] spip      pointer to the @p SPIDriver object

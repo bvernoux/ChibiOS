@@ -526,6 +526,9 @@ extern SPIDriver SPID6;
 extern "C" {
 #endif
   void spi_lld_init(void);
+
+  void spi_slave_lld_start(SPIDriver *spip);
+
   void spi_lld_start(SPIDriver *spip);
   void spi_lld_stop(SPIDriver *spip);
   void spi_lld_select(SPIDriver *spip);
