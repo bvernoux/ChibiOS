@@ -52,12 +52,15 @@
  * IO pins assignments.
  */
 #define GPIOA_ARD_A0                0U
+#define GPIOA_ADC1_IN0              0U
 #define GPIOA_ARD_A1                1U
+#define GPIOA_ADC1_IN1              1U
 #define GPIOA_ARD_D1                2U
-#define GPIOA_USART_TX              2U
+#define GPIOA_USART2_TX             2U
 #define GPIOA_ARD_D0                3U
-#define GPIOA_USART_RX              3U
+#define GPIOA_USART2_RX             3U
 #define GPIOA_ARD_A2                4U
+#define GPIOA_ADC1_IN4              4U
 #define GPIOA_LED_GREEN             5U
 #define GPIOA_ARD_D13               5U
 #define GPIOA_ARD_D12               6U
@@ -72,6 +75,7 @@
 #define GPIOA_PIN15                 15U
 
 #define GPIOB_ARD_A3                0U
+#define GPIOB_ADC1_IN8              0U
 #define GPIOB_PIN1                  1U
 #define GPIOB_PIN2                  2U
 #define GPIOB_SWO                   3U
@@ -81,9 +85,7 @@
 #define GPIOB_ARD_D10               6U
 #define GPIOB_PIN7                  7U
 #define GPIOB_ARD_D15               8U
-#define GPIOB_ARD_A5_ALT            8U
 #define GPIOB_ARD_D14               9U
-#define GPIOB_ARD_A4_ALT            9U
 #define GPIOB_ARD_D6                10U
 #define GPIOB_PIN11                 11U
 #define GPIOB_PIN12                 12U
@@ -92,7 +94,9 @@
 #define GPIOB_PIN15                 15U
 
 #define GPIOC_ARD_A5                0U
+#define GPIOC_ADC1_IN11             0U
 #define GPIOC_ARD_A4                1U
+#define GPIOC_ADC1_IN10             1U
 #define GPIOC_PIN2                  2U
 #define GPIOC_PIN3                  3U
 #define GPIOC_PIN4                  4U
@@ -187,8 +191,8 @@
 /*
  * Port A setup.
  * Everything input with pull-up except:
- * PA2  - Alternate output          (GPIOA_USART_TX).
- * PA3  - Normal input              (GPIOA_USART_RX).
+ * PA2  - Alternate output          (GPIOA_ARD_D1, GPIOA_USART2_TX).
+ * PA3  - Normal input              (GPIOA_ARD_D0, GPIOA_USART2_RX).
  * PA5  - Push Pull output          (GPIOA_LED_GREEN).
  * PA13 - Pull-up input             (GPIOA_SWDIO).
  * PA14 - Pull-down input           (GPIOA_SWCLK).

@@ -97,7 +97,7 @@
 - RT:  Added a NASA-OSAL API emulator over the RT kernel.
 - RT:  Added RT-STM32L476-DISCOVERY demo.
 - HAL: Added more STM32L4xx testhal demos.
-- HAL: Updated all STM32F476 mcuconf.h files.
+- HAL: Updated all STM32L476 mcuconf.h files.
 - ALL: Startup files relicensed under Apache 2.0.
 - ALL: Enhanced GCC .ld files with multiple flash regions and capability to
        insert additional sections within the standard loading rules.
@@ -111,6 +111,13 @@
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- HAL: Fixed bug in VREF enable/disable functions in ADCv3 driver 
+       (bug #740)(backported to 16.1.5).
+- HAL: Fixed DAC driver not enabled for STM32F4x7 and STM32F4x9 devices
+       (bug #739)(backported to 3.0.6 and 16.1.5).
+- HAL: Fixed bug in interrupt handlers in STM32F4xx EXT driver (bug #738)
+       (backported to 16.1.5).
+- HAL: Fixed clock enabling in STM32 ADCv3 (bug #737).
 - HAL: Fixed missing SDC initialization in RT-STM32F103-OLIMEX_STM32_P103 demo
        (bug #735)(backported to 16.1.5).
 - HAL: Fixed STM32 dac bug when using only channel 2 in direct mode (bug #734)
