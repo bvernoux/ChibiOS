@@ -79,6 +79,14 @@
 *****************************************************************************
 
 *** Next ***
+- HAL: Added events handling to the PAL driver. The EXT driver is now
+       deprecated but still supported.
+- EX:  Added flash implementation for Micron M25Qxxx devices.
+- HAL: Added base flash class and JESD216 serial flash class handling both SPI
+       and QSPI modes.
+- HAL: Extended PLLI2S for STM32F4xx subfamily.
+- HAL: Added QSPI driver implementation for STM32.
+- HAL: Added QSPI driver model.
 - VAR: Cortex-M VTOR initialization is now performed in startup files and
        no more in port initialization.
 - VAR: Changed GCC asm files extension from .s to .S because conventions.
@@ -108,9 +116,41 @@
        Shell files are now located under ./os/various/shell and have a
        dedicated shell.mk file.
 - ALL: Reorganized source tree, now ports are shared between RT and NIL.
+- EX:  New EX subsystem.
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- HAL: Fixed problem in USB driver when changing configuration (bug #757).
+- HAL: Fixed bug in function usbDisableEndpointsI() (bug #756)(backported
+       to 16.1.5).
+- HAL: Fixed wrong info in readme of LWIP related demos (bug #755)(backported
+       to 16.1.5).
+- HAL: Fixed misconfiguration in STM32L4 Discovery board files 
+       (bug #754)(backported to 16.1.5).
+- HAL: Fixed errors in documentation related to OTG peripheral switches 
+       (bug #753)(backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Fixed CMSIS function osThreadGetPriority() does not return correct
+       priority (bug #752)(backported 3.0.6 and 16.1.5).
+- HAL: Fixed wrong conditional branches in _adc_isr_error_code (bug #751)
+       (backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Fixed bug in STM32/ADCv3 (bug #750).
+- HAL: Fixed OPT settings and added board folder in STM32F4xx-USB_CDC demo
+       (bug #749)(backported to 3.0.6 and 16.1.5).
+- HAL: Fixed wrong comments in STM32F4xx GPT demo (bug #748)
+       (backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Fixed wrong comments and indents in STM32F7xx-GPT-ADC and 
+       STM32L4-GPT-ADC demos (bug #747) (backported to 16.1.5).
+- HAL: Fixed wrong comments and indent in STM32F4xx and STM32F7xx 
+       hal_lld.h (bug #746)(backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Removed wrong SAI masks in STM32F4xx hal_lld.h (bug #745)
+       (backported to 3.0.6 and 16.1.5).
+- HAL: Fixed wrong mask placement in STM32F4xx hal_lld.h (bug #744).
+- HAL: Fixed wrong indent in STM32F4xx hal_lld.h (bug #743)
+       (backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Removed unused macros in STM32F7xx and STM32F4xx hal_lld.h (bug #742)
+       (backported to 2.6.10, 3.0.6 and 16.1.5).
+- HAL: Fixed Doxygen related macros in STM32F7xx, STM32L0xx and STM32L4xx
+       lld files (bug #741).
 - HAL: Fixed bug in VREF enable/disable functions in ADCv3 driver 
        (bug #740)(backported to 16.1.5).
 - HAL: Fixed DAC driver not enabled for STM32F4x7 and STM32F4x9 devices

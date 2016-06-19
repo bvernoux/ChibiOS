@@ -38,9 +38,7 @@
 #define EP0_MAX_INSIZE          64
 #define EP0_MAX_OUTSIZE         64
 
-#if defined(STM32F7XX)
-#define GCCFG_INIT_VALUE        GCCFG_PWRDWN
-#else
+#if STM32_OTG_STEPPING == 1
 #if defined(BOARD_OTG_NOVBUSSENS)
 #define GCCFG_INIT_VALUE        (GCCFG_NOVBUSSENS | GCCFG_VBUSASEN |        \
                                  GCCFG_VBUSBSEN | GCCFG_PWRDWN)
@@ -48,6 +46,14 @@
 #define GCCFG_INIT_VALUE        (GCCFG_VBUSASEN | GCCFG_VBUSBSEN |          \
                                  GCCFG_PWRDWN)
 #endif
+
+#elif STM32_OTG_STEPPING == 2
+#if defined(BOARD_OTG_NOVBUSSENS)
+#define GCCFG_INIT_VALUE        GCCFG_PWRDWN
+#else
+#define GCCFG_INIT_VALUE        (GCCFG_VBDEN | GCCFG_PWRDWN)
+#endif
+
 #endif
 
 /*===========================================================================*/
@@ -627,9 +633,6 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
 /*===========================================================================*/
 
 #if STM32_USB_USE_OTG1 || defined(__DOXYGEN__)
-#if !defined(STM32_OTG1_HANDLER)
-#error "STM32_OTG1_HANDLER not defined"
-#endif
 /**
  * @brief   OTG1 interrupt handler.
  *
@@ -646,9 +649,6 @@ OSAL_IRQ_HANDLER(STM32_OTG1_HANDLER) {
 #endif
 
 #if STM32_USB_USE_OTG2 || defined(__DOXYGEN__)
-#if !defined(STM32_OTG2_HANDLER)
-#error "STM32_OTG2_HANDLER not defined"
-#endif
 /**
  * @brief   OTG2 interrupt handler.
  *

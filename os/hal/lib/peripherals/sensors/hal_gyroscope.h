@@ -101,12 +101,12 @@ typedef struct {
  * @brief   Gyroscope get axes number.
  *
  * @param[in] ip        pointer to a @p BaseGyroscope class.
- * @return              The number of axes of the BaseSensor
+ * @return              The number of axes of the BaseGyroscope
  *
  * @api
  */
 #define gyroscopeGetAxesNumber(ip)                                          \
-        (ip)->vmt_basegyroscope->get_axes_number(ip)
+        (ip)->vmt_basegyroscope->get_channels_number(ip)
 
 /**
  * @brief   Gyroscope read raw data.
@@ -158,8 +158,7 @@ typedef struct {
 /**
  * @brief   Updates gyroscope bias data from received buffer.
  * @note    The bias buffer must have the same length of the
- *          the gyroscope axes number. Bias must be computed on
- *          raw data and is a signed integer.
+ *          the gyroscope axes number.
  *
  * @param[in] ip        pointer to a @p BaseGyroscope class.
  * @param[in] bp        pointer to a buffer of bias values.

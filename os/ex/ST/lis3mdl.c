@@ -27,7 +27,6 @@
  */
 
 #include "hal.h"
-
 #include "lis3mdl.h"
 
 /*===========================================================================*/
@@ -59,7 +58,6 @@
 #define  LIS3MDL_AD_4                        ((uint8_t)0x10)
 #define  LIS3MDL_AD_5                        ((uint8_t)0x20)
 #define  LIS3MDL_AD_6                        ((uint8_t)0x40)
-
 #define  LIS3MDL_RW                          ((uint8_t)0x80)
 
 #define  LIS3MDL_AD_WHO_AM_I                 ((uint8_t)0x0F)
@@ -313,8 +311,10 @@ static msg_t reset_sensivity(void *ip) {
   else if(((LIS3MDLDriver *)ip)->config->fullscale == LIS3MDL_FS_16GA)
     for(i = 0; i < LIS3MDL_NUMBER_OF_AXES; i++)
       ((LIS3MDLDriver *)ip)->sensitivity[i] = LIS3MDL_SENS_16GA;
-  else
+  else {
     osalDbgAssert(FALSE, "reset_sensivity(), compass full scale issue");
+    return MSG_RESET;
+  }
   return MSG_OK;
 }
 

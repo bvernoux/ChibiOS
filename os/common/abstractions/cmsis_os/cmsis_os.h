@@ -76,7 +76,7 @@
 /**
  * @brief   System tick frequency.
  */
-#define osKernelSysTickFrequency    CH_CFG_FREQUENCY
+#define osKernelSysTickFrequency    CH_CFG_ST_FREQUENCY
 
 /*===========================================================================*/
 /* Module pre-compile time settings.                                         */
@@ -504,7 +504,7 @@ static inline osStatus osThreadYield(void) {
  */
 static inline osPriority osThreadGetPriority(osThreadId thread_id) {
 
-  return thread_id->prio;
+  return (osPriority)(NORMALPRIO - thread_id->prio);
 }
 
 /**

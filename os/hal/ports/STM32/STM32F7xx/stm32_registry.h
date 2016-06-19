@@ -215,6 +215,13 @@
 #define STM32_I2C4_TX_DMA_MSK               STM32_DMA_STREAM_ID_MSK(1, 5)
 #define STM32_I2C4_TX_DMA_CHN               0x00200000
 
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  TRUE
+#define STM32_QUADSPI1_HANDLER              Vector1B0
+#define STM32_QUADSPI1_NUMBER               92
+#define STM32_QUADSPI1_DMA_MSK              STM32_DMA_STREAM_ID_MSK(2, 7)
+#define STM32_QUADSPI1_DMA_CHN              0x30000000
+
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
 #define STM32_RTC_HAS_SUBSECONDS            TRUE
@@ -453,8 +460,7 @@
 #define STM32_HAS_LPUART1                   FALSE
 
 /* USB attributes.*/
-#define STM32_HAS_USB                       FALSE
-
+#define STM32_OTG_STEPPING                  2
 #define STM32_HAS_OTG1                      TRUE
 #define STM32_OTG1_HANDLER                  Vector14C
 #define STM32_OTG1_NUMBER                   67
@@ -467,6 +473,7 @@
 #define STM32_OTG2_EP1OUT_NUMBER            74
 #define STM32_OTG2_EP1IN_NUMBER             75
 
+#define STM32_HAS_USB                       FALSE
 /* IWDG attributes.*/
 #define STM32_HAS_IWDG                      TRUE
 #define STM32_IWDG_IS_WINDOWED              TRUE

@@ -98,12 +98,12 @@ typedef struct {
  * @brief   Accelerometer get axes number.
  *
  * @param[in] ip        pointer to a @p BaseAccelerometer class.
- * @return              The number of axes of the BaseSensor
+ * @return              The number of axes of the BaseAccelerometer
  *
  * @api
  */
 #define accelerometerGetAxesNumber(ip)                                      \
-        (ip)->vmt_baseaccelerometer->get_axes_number(ip)
+        (ip)->vmt_baseaccelerometer->get_channels_number(ip)
 
 /**
  * @brief   Accelerometer read raw data.
@@ -138,8 +138,7 @@ typedef struct {
 /**
  * @brief   Updates accelerometer bias data from received buffer.
  * @note    The bias buffer must have the same length of the
- *          the accelerometer axes number. Bias must be computed on
- *          raw data and is a signed integer.
+ *          the accelerometer axes number.
  *
  *
  * @param[in] ip        pointer to a @p BaseAccelerometer class.

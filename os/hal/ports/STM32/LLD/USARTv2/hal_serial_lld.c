@@ -44,6 +44,15 @@
 #define USART_ISR_LBDF                      USART_ISR_LBD
 #endif
 
+/* Handling differences in frame size bits.*/
+#if !defined(USART_CR1_M_0)
+#define USART_CR1_M_0                       (1 << 12)
+#endif
+
+#if !defined(USART_CR1_M_1)
+#define USART_CR1_M_1                       (1 << 28)
+#endif
+
 /* Handling the case where UART4 and UART5 are actually USARTs, this happens
    in the STM32F0xx.*/
 #if defined(USART4)
@@ -147,6 +156,24 @@ static void usart_init(SerialDriver *sdp, const SerialConfig *config) {
                          USART_CR1_RXNEIE | USART_CR1_TE |
                          USART_CR1_RE;
   u->ICR = 0xFFFFFFFFU;
+
+  /* Deciding mask to be applied on the data register on receive, this is
+     required in order to mask out the parity bit.*/
+  if ((config->cr1 & USART_CR1_PCE) != 0U) {
+    switch (config->cr1 & (USART_CR1_M_1 | USART_CR1_M_0)) {
+    case 0:
+      sdp->rxmask = 0x7F;
+      break;
+    case USART_CR1_M_1:
+      sdp->rxmask = 0x3F;
+      break;
+    default:
+      sdp->rxmask = 0xFF;
+    }
+  }
+  else {
+    sdp->rxmask = 0xFF;
+  }
 }
 
 /**
@@ -212,7 +239,7 @@ static void serve_interrupt(SerialDriver *sdp) {
   /* Data available.*/
   if (isr & USART_ISR_RXNE) {
     osalSysLockFromISR();
-    sdIncomingDataI(sdp, (uint8_t)u->RDR);
+    sdIncomingDataI(sdp, (uint8_t)u->RDR & sdp->rxmask);
     osalSysUnlockFromISR();
   }
 

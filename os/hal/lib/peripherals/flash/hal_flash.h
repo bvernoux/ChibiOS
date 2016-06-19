@@ -16,7 +16,7 @@
 
 /**
  * @file    hal_flash.h
- * @brief   Generic flash interface header.
+ * @brief   Generic flash driver class header.
  *
  * @addtogroup HAL_FLASH
  * @{
@@ -33,10 +33,11 @@
  * @name    Flash attributes
  * @{
  */
-#define FLASH_ATTR_ERASED_IS_ONE        0x00000001
-#define FLASH_ATTR_MEMORY_MAPPED        0x00000002
-#define FLASH_ATTR_REWRITABLE           0x00000004
-#define FLASH_ATTR_READ_ECC_CAPABLE     0x00000008
+#define FLASH_ATTR_ERASED_IS_ONE            0x00000001
+#define FLASH_ATTR_MEMORY_MAPPED            0x00000002
+#define FLASH_ATTR_REWRITABLE               0x00000004
+#define FLASH_ATTR_READ_ECC_CAPABLE         0x00000008
+#define FLASH_ATTR_SUSPEND_ERASE_CAPABLE    0x00000010
 /** @} */
 
 /*===========================================================================*/
@@ -58,7 +59,9 @@ typedef enum {
   FLASH_UNINIT = 0,
   FLASH_STOP = 1,
   FLASH_READY = 2,
-  FLASH_ACTIVE = 3
+  FLASH_READ = 3,
+  FLASH_PGM = 4,
+  FLASH_ERASE = 5
 } flash_state_t;
 
 /**
@@ -66,19 +69,18 @@ typedef enum {
  */
 typedef enum {
   FLASH_NO_ERROR = 0,           /* No error.                                */
-  FLASH_PARAMETER_ERROR = 1,    /* Error in a function parameter.           */
-  FLASH_ADDRESS_ERROR = 2,      /* Operation overlaps invalid addresses.    */
-  FLASH_ECC_ERROR = 3,          /* ECC error during read operation.         */
-  FLASH_PROGRAM_FAILURE = 4,    /* Program operation failed.                */
-  FLASH_ERASE_FAILURE = 5,      /* Erase operation failed.                  */
-  FLASH_VERIFY_FAILURE = 6,     /* Verify operation failed.                 */
-  FLASH_HW_FAILURE = 7          /* Controller or communication error.       */
+  FLASH_BUSY_ERASING = 1,       /* Erase operation in progress.             */
+  FLASH_ERROR_READ = 2,         /* ECC or other error during read operation.*/
+  FLASH_ERROR_PROGRAM = 3,      /* Program operation failed.                */
+  FLASH_ERROR_ERASE = 4,        /* Erase operation failed.                  */
+  FLASH_ERROR_VERIFY = 5,       /* Verify operation failed.                 */
+  FLASH_ERROR_HW_FAILURE = 6    /* Controller or communication error.       */
 } flash_error_t;
 
 /**
- * @brief   Type of a flash address.
+ * @brief   Type of a flash offset.
  */
-typedef uint32_t flash_address_t;
+typedef uint32_t flash_offset_t;
 
 /**
  * @brief   Type of a flash sector number.
@@ -90,13 +92,13 @@ typedef uint32_t flash_sector_t;
  */
 typedef struct {
   /**
-   * @brief         Sector address.
+   * @brief         Sector offset.
    */
-  flash_address_t       address;
+  flash_offset_t        offset;
   /**
    * @brief         Sector size.
    */
-  size_t                size;
+  uint32_t              size;
 } flash_sector_descriptor_t;
 
 /**
@@ -110,7 +112,7 @@ typedef struct {
   /**
    * @brief     Size of write page.
    */
-  size_t                page_size;
+  uint32_t              page_size;
   /**
    * @brief     Number of sectors in the device.
    */
@@ -123,15 +125,15 @@ typedef struct {
   const flash_sector_descriptor_t *sectors;
   /**
    * @brief     Size of sectors for devices with uniform sector size.
-   * @note      If zero then the device has non uniform sectos described
+   * @note      If zero then the device has non uniform sectors described
    *            by the @p sectors array.
    */
-  size_t                sectors_size;
+  uint32_t              sectors_size;
   /**
    * @brief     Flash address if memory mapped or zero.
    * @note      Conventionally, non memory mapped devices have address zero.
    */
-  flash_address_t       address;
+  flash_offset_t        address;
 } flash_descriptor_t;
 
 /**
@@ -140,23 +142,21 @@ typedef struct {
  */
 #define _base_flash_methods_alone                                           \
   /* Get flash device attributes.*/                                         \
-  const flash_descriptor_t * (*get_attributes)(void *instance);             \
-  /* Erase whole flash device.*/                                            \
-  flash_error_t (*erase_all)(void *instance);                               \
-  /* Erase single sector.*/                                                 \
-  flash_error_t (*erase_sectors)(void *instance,                            \
-                                flash_sector_t sector,                      \
-                                flash_sector_t n);                          \
-  /* Erase single sector.*/                                                 \
-  flash_error_t (*are_sectors_erased)(void *instance,                       \
-                                     flash_sector_t sector,                 \
-                                     flash_sector_t n);                     \
-  /* Write operation.*/                                                     \
-  flash_error_t (*program)(void *instance, flash_address_t addr,            \
-                           const uint8_t *pp, size_t n);                    \
+  const flash_descriptor_t * (*get_descriptor)(void *instance);             \
   /* Read operation.*/                                                      \
-  flash_error_t (*read)(void *instance, flash_address_t addr,               \
-                        uint8_t *rp, size_t n);
+  flash_error_t (*read)(void *instance, flash_offset_t offset,              \
+                        size_t n, uint8_t *rp);                             \
+  /* Program operation.*/                                                   \
+  flash_error_t (*program)(void *instance, flash_offset_t offset,           \
+                           size_t n, const uint8_t *pp);                    \
+  /* Erase whole flash device.*/                                            \
+  flash_error_t (*start_erase_all)(void *instance);                         \
+  /* Erase single sector.*/                                                 \
+  flash_error_t (*start_erase_sector)(void *instance,                       \
+                                      flash_sector_t sector);               \
+  flash_error_t (*query_erase)(void *instance, uint32_t *wait_time);        \
+  /* Verify erase single sector.*/                                          \
+  flash_error_t (*verify_erase)(void *instance, flash_sector_t sector);
 
 /**
  * @brief   @p BaseFlash specific methods with inherited ones.
@@ -173,8 +173,6 @@ struct BaseFlashVMT {
 
 /**
  * @brief   @p BaseFlash specific data.
- * @note    It is empty because @p BaseFlash is only an interface
- *          without implementation.
  */
 #define _base_flash_data                                                    \
   /* Driver state.*/                                                        \
@@ -186,7 +184,7 @@ struct BaseFlashVMT {
  */
 typedef struct {
   /** @brief Virtual Methods Table.*/
-  const struct BaseFlashVMT *vmt_baseflash;
+  const struct BaseFlashVMT *vmt;
   _base_flash_data
 } BaseFlash;
 
@@ -206,74 +204,100 @@ typedef struct {
  *
  * @api
  */
-#define flashGetType(ip)                                                    \
-  (ip)->vmt_baseflash->get_attributes(ip)
-
-/**
- * @brief   Whole device erase operation.
- *
- * @param[in] ip        pointer to a @p BaseFlash or derived class
- * @return              An error code.
- *
- * @api
- */
-#define flashEraseAll(ip)                                                   \
-  (ip)->vmt_baseflash->erase_all(ip)
-
-/**
- * @brief   Erase operation on a series of contiguous sectors.
- *
- * @param[in] ip        pointer to a @p BaseFlash or derived class
- * @param[in] secotr    first sector to be erased
- * @param[in] n         number of sectors to be erased
- * @return              An error code.
- *
- * @api
- */
-#define flashEraseSectors(ip, sector, n)                                    \
-  (ip)->vmt_baseflash->erase_sectors(ip, sector, n)
-
-/**
- * @brief   Returns the erase state of a series of contiguous sectors.
- *
- * @param[in] ip        pointer to a @p BaseFlash or derived class
- * @param[in] secotr    first sector to be erased
- * @param[in] n         number of sectors to be erased
- * @return              An error code.
- *
- * @api
- */
-#define flashAreSectorsErased(ip, sector, n)                                \
-  (ip)->vmt_baseflash->are_sectors_erased(ip, sector, n)
-
-/**
- * @brief   Write operation.
- *
- * @param[in] ip        pointer to a @p BaseFlash or derived class
- * @param[in] addr      flash address
- * @param[in] wp        pointer to the data buffer
- * @param[in] n         number of bytes to be programmed
- * @return              An error code.
- *
- * @api
- */
-#define flashProgram(ip)                                                    \
-  (ip)->vmt_baseflash->program(ip, addr, pp, n)
+#define flashGetDescriptor(ip)                                              \
+  (ip)->vmt->get_descriptor(ip)
 
 /**
  * @brief   Read operation.
  *
  * @param[in] ip        pointer to a @p BaseFlash or derived class
- * @param[in] addr      flash address
- * @param[out] rp       pointer to the data buffer
+ * @param[in] offset    flash offset
  * @param[in] n         number of bytes to be read
+ * @param[out] rp       pointer to the data buffer
  * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ * @retval FLASH_ERROR_READ if the read operation failed.
  *
  * @api
  */
-#define flashRead(ip)                                                       \
-  (ip)->vmt_baseflash->read(ip, addr, rp, n)
+#define flashRead(ip, offset, n, rp)                                        \
+  (ip)->vmt->read(ip, offset, n, rp)
 
+/**
+ * @brief   Program operation.
+ *
+ * @param[in] ip        pointer to a @p BaseFlash or derived class
+ * @param[in] offset    flash offset
+ * @param[in] n         number of bytes to be programmed
+ * @param[in] wp        pointer to the data buffer
+ * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ * @retval FLASH_ERROR_PROGRAM if the program operation failed.
+ *
+ * @api
+ */
+#define flashProgram(ip, offset, n, pp)                                     \
+  (ip)->vmt->program(ip, offset, n, pp)
+
+/**
+ * @brief   Starts a whole-device erase operation.
+ *
+ * @param[in] ip        pointer to a @p BaseFlash or derived class
+ * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ *
+ * @api
+ */
+#define flashStartEraseAll(ip)                                              \
+  (ip)->vmt->start_erase_all(ip)
+
+/**
+ * @brief   Starts an sector erase operation.
+ *
+ * @param[in] ip        pointer to a @p BaseFlash or derived class
+ * @param[in] sector    sector to be erased
+ * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ *
+ * @api
+ */
+#define flashStartEraseSector(ip, sector)                                   \
+  (ip)->vmt->start_erase_sector(ip, sector)
+
+/**
+ * @brief   Queries the driver for erase operation progress.
+ *
+ * @param[in] ip        pointer to a @p BaseFlash or derived class
+ * @param[out] msec     recommended time, in milliseconds, that what should be
+ *                      spent before calling this function again, can be @p NULL
+ * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ * @retval FLASH_ERROR_ERASE if the erase operation failed.
+ *
+ * @api
+ */
+#define flashQueryErase(ip, msec)                                           \
+  (ip)->vmt->query_erase(ip, msec)
+
+/**
+ * @brief   Returns the erase state of a sector.
+ *
+ * @param[in] ip        pointer to a @p BaseFlash or derived class
+ * @param[in] sector    sector to be verified
+ * @return              An error code.
+ * @retval FLASH_NO_ERROR if there is no erase operation in progress.
+ * @retval FLASH_BUSY_ERASING if there is an erase operation in progress.
+ * @retval FLASH_ERROR_VERIFY if the verify operation failed.
+ *
+ * @api
+ */
+#define flashVerifyErase(ip, sector)                                        \
+  (ip)->vmt->verify_erase(ip, sector)
 /** @} */
 
 /*===========================================================================*/
@@ -283,7 +307,9 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+  flash_error_t flashWaitErase(BaseFlash *devp);
+  flash_offset_t flashGetSectorOffset(BaseFlash *devp, flash_sector_t sector);
+  uint32_t flashGetSectorSize(BaseFlash *devp, flash_sector_t sector);
 #ifdef __cplusplus
 }
 #endif
