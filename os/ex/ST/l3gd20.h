@@ -24,7 +24,6 @@
  *
  * @{
  */
-
 #ifndef _L3GD20_H_
 #define _L3GD20_H_
 
@@ -35,7 +34,34 @@
 /*===========================================================================*/
 
 /**
- * @brief   L3GD20 characteristics
+ * @name    Version identification
+ * @{
+ */
+/**
+ * @brief   L3GD20 driver version string.
+ */
+#define EX_L3GD20_VERSION           "1.0.0"
+
+/**
+ * @brief   L3GD20 driver version major number.
+ */
+#define EX_L3GD20_MAJOR             1
+
+/**
+ * @brief   L3GD20 driver version minor number.
+ */
+#define EX_L3GD20_MINOR             0
+
+/**
+ * @brief   L3GD20 driver version patch number.
+ */
+#define EX_L3GD20_PATCH             0
+/** @} */
+
+/**
+ * @brief   L3GD20 characteristics.
+ *
+ * @{
  */
 #define L3GD20_NUMBER_OF_AXES       3U
 
@@ -141,7 +167,7 @@
  */
 #define L3GD20_CTRL_REG4_MASK       0xF1        /**< L3GD20_CTRL_REG4 mask  */
 #define L3GD20_CTRL_REG4_SIM        (1 << 0)    /**< SPI mode               */
-#define L3GD20_CTRL_REG4_FS_MASK    (3 << 4)    /**< Full scale mask        */
+#define L3GD20_CTRL_REG4_FS_MASK    0x30        /**< Full scale field mask  */
 #define L3GD20_CTRL_REG4_FS0        (1 << 4)    /**< Full scale bit 0       */
 #define L3GD20_CTRL_REG4_FS1        (1 << 5)    /**< Full scale bit 1       */
 #define L3GD20_CTRL_REG4_BLE        (1 << 6)    /**< Big/little endian data */
@@ -160,6 +186,35 @@
 #define L3GD20_CTRL_REG5_HPEN       (1 << 4)    /**< HP filter enable       */
 #define L3GD20_CTRL_REG5_FIFO_EN    (1 << 6)    /**< FIFO enable            */
 #define L3GD20_CTRL_REG5_BOOT       (1 << 7)    /**< Reboot memory content  */
+/** @} */
+
+/**
+ * @name    L3GD20_INT1_CFG register bits definitions
+ * @{
+ */
+#define L3GD20_INT1_CFG_MASK       0xFF        /**< L3GD20_INT1_CFG mask   */
+#define L3GD20_INT1_CFG_XLIE       (1 << 0)    /**< Enable INT1 on X low   */
+#define L3GD20_INT1_CFG_XHIE       (1 << 1)    /**< Enable INT1 on X high  */
+#define L3GD20_INT1_CFG_YLIE       (1 << 2)    /**< Enable INT1 on Y low   */
+#define L3GD20_INT1_CFG_YHIE       (1 << 3)    /**< Enable INT1 on Y high  */
+#define L3GD20_INT1_CFG_ZLIE       (1 << 4)    /**< Enable INT1 on Z low   */
+#define L3GD20_INT1_CFG_ZHIE       (1 << 5)    /**< Enable INT1 on Z high  */
+#define L3GD20_INT1_CFG_LIR        (1 << 6)    /**< Latch INT1             */
+#define L3GD20_INT1_CFG_AND_OR     (1 << 7)    /**< AND OR combination     */
+/** @} */
+
+/**
+ * @name    L3GD20_INT1_SRC register bits definitions
+ * @{
+ */
+#define L3GD20_INT1_SRC_MASK       0x7F        /**< L3GD20_INT1_SRC mask   */
+#define L3GD20_INT1_SRC_XL         (1 << 0)    /**< X low event            */
+#define L3GD20_INT1_SRC_XH         (1 << 1)    /**< X high event           */
+#define L3GD20_INT1_SRC_YL         (1 << 2)    /**< Y low event            */
+#define L3GD20_INT1_SRC_YH         (1 << 3)    /**< Y high event           */
+#define L3GD20_INT1_SRC_ZL         (1 << 4)    /**< Z low event            */
+#define L3GD20_INT1_SRC_ZH         (1 << 5)    /**< Z high event           */
+#define L3GD20_INT1_SRC_IA         (1 << 6)    /**< Interrupt active       */
 /** @} */
 
 /*===========================================================================*/
@@ -235,6 +290,11 @@
 
 #if L3GD20_USE_SPI && !HAL_USE_SPI
 #error "L3GD20_USE_SPI requires HAL_USE_SPI"
+#endif
+
+//TODO: add I2C support.
+#if L3GD20_USE_I2C
+#error "L3GD20 over I2C still not supported"
 #endif
 
 #if L3GD20_USE_I2C && !HAL_USE_I2C
@@ -333,14 +393,6 @@ typedef enum {
 }l3gd20_end_t;
 
 /**
- * @brief   L3GD20 measurement unit.
- */
-typedef enum {
-  L3GD20_UNIT_DPS = 0x00,           /**< Cooked data in degrees per seconds.*/
-  L3GD20_UNIT_RPS = 0x01,           /**< Cooked data in radians per seconds.*/
-} l3gd20_unit_t;
-
-/**
  * @brief   Driver state machine possible states.
  */
 typedef enum {
@@ -417,10 +469,6 @@ typedef struct {
    */
   l3gd20_lp2m_t             lp2mode;
 #endif
-  /**
-   * @brief   L3GD20 initial measurement unit.
-   */
-  l3gd20_unit_t             unit;
 } L3GD20Config;
 
 /**
@@ -433,14 +481,8 @@ typedef struct L3GD20Driver L3GD20Driver;
  */
 #define _l3gd20_methods                                                     \
   _base_gyroscope_methods                                                   \
-  /* Change full scale value of L3GD20 .*/                                  \
-  msg_t (*set_full_scale)(void *instance, l3gd20_fs_t fs);                  \
-  /* Get full scale value of L3GD20 .*/                                     \
-  l3gd20_fs_t (*get_full_scale)(void *instance);                            \
-  /* Change measurement unit of L3GD20 .*/                                  \
-  msg_t (*set_meas_unit)(void *instance, l3gd20_unit_t unit);               \
-  /* Get measurement unit of L3GD20 .*/                                     \
-  l3gd20_unit_t (*get_meas_unit)(void *instance);
+  /* Change full scale value of L3GD20.*/                                   \
+  msg_t (*set_full_scale)(void *instance, l3gd20_fs_t fs);
 
 /**
  * @extends BaseGyroscopeVMT
@@ -465,9 +507,7 @@ struct L3GD20VMT {
   /* Current Bias data.*/                                                   \
   float                     bias[L3GD20_NUMBER_OF_AXES];                    \
   /* Current full scale value.*/                                            \
-  float                     fullscale;                                      \
-  /* Measurement unit.*/                                                    \
-  l3gd20_unit_t             meas_unit;  
+  float                     fullscale;
 
 /**
  * @extends BaseGyroscope
@@ -492,7 +532,7 @@ struct L3GD20Driver {
 /*===========================================================================*/
 
 /**
- * @brief   Change initial fullscale value.
+ * @brief   Change gyroscope full scale value.
  *
  * @param[in] ip        pointer to a @p BaseGyroscope class.
  * @param[in] fs        the new full scale value.
@@ -504,20 +544,6 @@ struct L3GD20Driver {
  */
 #define gyroscopeSetFullScale(ip, fs)                                       \
         (ip)->vmt_l3gd20->set_full_scale(ip, fs)
-
-/**
- * @brief   Set gyroscope cooked data measurement unit.
- *
- * @param[in] ip        pointer to a @p BaseGyroscope class.
- * @param[in] unit      the MEMS measurement unit.
- *
- * @return              The operation status.
- * @retval MSG_OK       if the function succeeded.
- * @retval MSG_RESET    if one or more errors occurred.
- * @api
- */
-#define gyroscopeSetMeasurementUnit(ip, unit)                               \
-        (ip)->vmt_l3gd20->set_meas_unit(ip, unit)
         
 /*===========================================================================*/
 /* External declarations.                                                    */

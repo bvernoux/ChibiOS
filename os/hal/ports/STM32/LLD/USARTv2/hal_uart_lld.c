@@ -220,6 +220,7 @@ static void usart_stop(UARTDriver *uartp) {
  */
 static void usart_start(UARTDriver *uartp) {
   uint32_t cr1;
+  const uint32_t tmo = uartp->config->timeout;
   USART_TypeDef *u = uartp->usart;
 
   /* Defensive programming, starting from a clean state.*/
@@ -241,6 +242,13 @@ static void usart_start(UARTDriver *uartp) {
      interrupt.*/
   cr1 = USART_CR1_UE | USART_CR1_PEIE | USART_CR1_TE | USART_CR1_RE;
   u->CR1 = uartp->config->cr1 | cr1;
+
+  /* Set receive timeout and checks if it is really applied.*/
+  if (tmo > 0) {
+    osalDbgAssert(tmo <= USART_RTOR_RTO, "Timeout overflow");
+    u->RTOR = tmo;
+    osalDbgAssert(tmo == u->RTOR, "Timeout feature unsupported in this UART");
+  }
 
   /* Starting the receiver idle loop.*/
   uart_enter_rx_idle_loop(uartp);
@@ -325,6 +333,12 @@ static void serve_usart_irq(UARTDriver *uartp) {
     /* End of transmission, a callback is generated.*/
     _uart_tx2_isr_code(uartp);
   }
+
+  /* Timeout interrupt sources are only checked if enabled in CR1.*/
+  if (((cr1 & USART_CR1_IDLEIE) && (isr & USART_ISR_IDLE)) ||
+      ((cr1 & USART_CR1_RTOIE) && (isr & USART_ISR_RTOF))) {
+    _uart_timeout_isr_code(uartp);
+  }
 }
 
 /*===========================================================================*/
@@ -368,6 +382,45 @@ OSAL_IRQ_HANDLER(STM32_USART2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
 }
 #endif /* STM32_UART_USE_USART2 */
+
+
+#if defined(STM32_USART3_8_HANDLER)
+#if STM32_SERIAL_USE_USART3 || STM32_SERIAL_USE_UART4  ||                   \
+    STM32_SERIAL_USE_UART5  || STM32_SERIAL_USE_USART6 ||                   \
+    STM32_SERIAL_USE_UART7  || STM32_SERIAL_USE_UART8  || defined(__DOXYGEN__)
+/**
+ * @brief   USART2 interrupt handler.
+ *
+ * @isr
+ */
+OSAL_IRQ_HANDLER(STM32_USART3_8_HANDLER) {
+
+  OSAL_IRQ_PROLOGUE();
+
+#if STM32_UART_USE_USART3
+  serve_usart_irq(&UARTD3);
+#endif
+#if STM32_UART_USE_UART4
+  serve_usart_irq(&UARTD4);
+#endif
+#if STM32_UART_USE_UART5
+  serve_usart_irq(&UARTD5);
+#endif
+#if STM32_UART_USE_USART6
+  serve_usart_irq(&UARTD6);
+#endif
+#if STM32_UART_USE_UART7
+  serve_usart_irq(&UARTD7);
+#endif
+#if STM32_UART_USE_UART8
+  serve_usart_irq(&UARTD8);
+#endif
+
+  OSAL_IRQ_EPILOGUE();
+}
+#endif
+
+#else /* !defined(STM32_USART3_8_HANDLER) */
 
 #if STM32_UART_USE_USART3 || defined(__DOXYGEN__)
 #if !defined(STM32_USART3_HANDLER)
@@ -483,6 +536,8 @@ OSAL_IRQ_HANDLER(STM32_UART8_HANDLER) {
 }
 #endif /* STM32_UART_USE_UART8 */
 
+#endif /* !defined(STM32_USART3_8_HANDLER) */
+
 /*===========================================================================*/
 /* Driver exported functions.                                                */
 /*===========================================================================*/
@@ -501,6 +556,9 @@ void uart_lld_init(void) {
   UARTD1.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD1.dmarx   = STM32_DMA_STREAM(STM32_UART_USART1_RX_DMA_STREAM);
   UARTD1.dmatx   = STM32_DMA_STREAM(STM32_UART_USART1_TX_DMA_STREAM);
+#if defined(STM32_USART1_NUMBER)
+  nvicEnableVector(STM32_USART1_NUMBER, STM32_UART_USART1_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_USART2
@@ -510,6 +568,9 @@ void uart_lld_init(void) {
   UARTD2.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD2.dmarx   = STM32_DMA_STREAM(STM32_UART_USART2_RX_DMA_STREAM);
   UARTD2.dmatx   = STM32_DMA_STREAM(STM32_UART_USART2_TX_DMA_STREAM);
+#if defined(STM32_USART2_NUMBER)
+  nvicEnableVector(STM32_USART2_NUMBER, STM32_UART_USART2_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_USART3
@@ -519,6 +580,9 @@ void uart_lld_init(void) {
   UARTD3.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD3.dmarx   = STM32_DMA_STREAM(STM32_UART_USART3_RX_DMA_STREAM);
   UARTD3.dmatx   = STM32_DMA_STREAM(STM32_UART_USART3_TX_DMA_STREAM);
+#if defined(STM32_USART3_NUMBER)
+  nvicEnableVector(STM32_USART3_NUMBER, STM32_UART_USART3_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_UART4
@@ -528,6 +592,9 @@ void uart_lld_init(void) {
   UARTD4.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD4.dmarx   = STM32_DMA_STREAM(STM32_UART_UART4_RX_DMA_STREAM);
   UARTD4.dmatx   = STM32_DMA_STREAM(STM32_UART_UART4_TX_DMA_STREAM);
+#if defined(STM32_UART4_NUMBER)
+  nvicEnableVector(STM32_UART4_NUMBER, STM32_UART_UART4_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_UART5
@@ -537,6 +604,9 @@ void uart_lld_init(void) {
   UARTD5.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD5.dmarx   = STM32_DMA_STREAM(STM32_UART_UART5_RX_DMA_STREAM);
   UARTD5.dmatx   = STM32_DMA_STREAM(STM32_UART_UART5_TX_DMA_STREAM);
+#if defined(STM32_UART5_NUMBER)
+  nvicEnableVector(STM32_UART5_NUMBER, STM32_UART_UART5_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_USART6
@@ -546,6 +616,9 @@ void uart_lld_init(void) {
   UARTD6.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD6.dmarx   = STM32_DMA_STREAM(STM32_UART_USART6_RX_DMA_STREAM);
   UARTD6.dmatx   = STM32_DMA_STREAM(STM32_UART_USART6_TX_DMA_STREAM);
+#if defined(STM32_USART6_NUMBER)
+  nvicEnableVector(STM32_USART6_NUMBER, STM32_UART_USART6_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_UART7
@@ -555,6 +628,9 @@ void uart_lld_init(void) {
   UARTD7.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD7.dmarx   = STM32_DMA_STREAM(STM32_UART_UART7_RX_DMA_STREAM);
   UARTD7.dmatx   = STM32_DMA_STREAM(STM32_UART_UART7_TX_DMA_STREAM);
+#if defined(STM32_UART7_NUMBER)
+  nvicEnableVector(STM32_UART7_NUMBER, STM32_UART_UART7_IRQ_PRIORITY);
+#endif
 #endif
 
 #if STM32_UART_USE_UART8
@@ -564,6 +640,17 @@ void uart_lld_init(void) {
   UARTD8.dmamode = STM32_DMA_CR_DMEIE | STM32_DMA_CR_TEIE;
   UARTD8.dmarx   = STM32_DMA_STREAM(STM32_UART_UART8_RX_DMA_STREAM);
   UARTD8.dmatx   = STM32_DMA_STREAM(STM32_UART_UART8_TX_DMA_STREAM);
+#if defined(STM32_UART8_NUMBER)
+  nvicEnableVector(STM32_UART8_NUMBER, STM32_UART_UART8_IRQ_PRIORITY);
+#endif
+#endif
+
+#if STM32_UART_USE_USART3 || STM32_UART_USE_UART4  ||                   \
+    STM32_UART_USE_UART5  || STM32_UART_USE_USART6 ||                   \
+    STM32_UART_USE_UART7  || STM32_UART_USE_UART8
+#if defined(STM32_USART3_8_HANDLER)
+  nvicEnableVector(STM32_USART3_8_NUMBER, STM32_UART_USART3_8_PRIORITY);
+#endif
 #endif
 }
 
@@ -591,7 +678,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUSART1(FALSE);
-      nvicEnableVector(STM32_USART1_NUMBER, STM32_UART_USART1_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(USART1_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_USART1_DMA_PRIORITY);
     }
@@ -611,7 +697,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUSART2(FALSE);
-      nvicEnableVector(STM32_USART2_NUMBER, STM32_UART_USART2_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(USART2_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_USART2_DMA_PRIORITY);
     }
@@ -631,7 +716,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUSART3(FALSE);
-      nvicEnableVector(STM32_USART3_NUMBER, STM32_UART_USART3_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(USART3_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_USART3_DMA_PRIORITY);
     }
@@ -651,7 +735,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUART4(FALSE);
-      nvicEnableVector(STM32_UART4_NUMBER, STM32_UART_UART4_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(UART4_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_UART4_DMA_PRIORITY);
     }
@@ -671,7 +754,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUART5(FALSE);
-      nvicEnableVector(STM32_UART5_NUMBER, STM32_UART_UART5_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(UART5_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_UART5_DMA_PRIORITY);
     }
@@ -691,7 +773,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUSART6(FALSE);
-      nvicEnableVector(STM32_USART6_NUMBER, STM32_UART_USART6_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(USART6_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_USART6_DMA_PRIORITY);
     }
@@ -711,7 +792,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUART7(FALSE);
-      nvicEnableVector(STM32_UART7_NUMBER, STM32_UART_UART7_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(UART7_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_UART7_DMA_PRIORITY);
     }
@@ -731,7 +811,6 @@ void uart_lld_start(UARTDriver *uartp) {
                             (void *)uartp);
       osalDbgAssert(!b, "stream already allocated");
       rccEnableUART8(FALSE);
-      nvicEnableVector(STM32_UART8_NUMBER, STM32_UART_UART8_IRQ_PRIORITY);
       uartp->dmamode |= STM32_DMA_CR_CHSEL(UART8_RX_DMA_CHANNEL) |
                         STM32_DMA_CR_PL(STM32_UART_UART8_DMA_PRIORITY);
     }
@@ -767,7 +846,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_USART1
     if (&UARTD1 == uartp) {
-      nvicDisableVector(STM32_USART1_NUMBER);
       rccDisableUSART1(FALSE);
       return;
     }
@@ -775,7 +853,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_USART2
     if (&UARTD2 == uartp) {
-      nvicDisableVector(STM32_USART2_NUMBER);
       rccDisableUSART2(FALSE);
       return;
     }
@@ -783,7 +860,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_USART3
     if (&UARTD3 == uartp) {
-      nvicDisableVector(STM32_USART3_NUMBER);
       rccDisableUSART3(FALSE);
       return;
     }
@@ -791,7 +867,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_UART4
     if (&UARTD4 == uartp) {
-      nvicDisableVector(STM32_UART4_NUMBER);
       rccDisableUART4(FALSE);
       return;
     }
@@ -799,7 +874,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_UART5
     if (&UARTD5 == uartp) {
-      nvicDisableVector(STM32_UART5_NUMBER);
       rccDisableUART5(FALSE);
       return;
     }
@@ -807,7 +881,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_USART6
     if (&UARTD6 == uartp) {
-      nvicDisableVector(STM32_USART6_NUMBER);
       rccDisableUSART6(FALSE);
       return;
     }
@@ -815,7 +888,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_UART7
     if (&UARTD7 == uartp) {
-      nvicDisableVector(STM32_UART7_NUMBER);
       rccDisableUART7(FALSE);
       return;
     }
@@ -823,7 +895,6 @@ void uart_lld_stop(UARTDriver *uartp) {
 
 #if STM32_UART_USE_UART8
     if (&UARTD8 == uartp) {
-      nvicDisableVector(STM32_UART8_NUMBER);
       rccDisableUART8(FALSE);
       return;
     }

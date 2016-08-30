@@ -31,6 +31,15 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
+/**
+ * @brief   Advanced buffering support switch.
+ * @details This constants enables the advanced buffering support in the
+ *          low level driver, the queue buffer is no more part of the
+ *          @p SerialDriver structure, each driver can have a different
+ *          queue size.
+ */
+#define SERIAL_ADVANCED_BUFFERING_SUPPORT   TRUE
+
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
@@ -190,6 +199,132 @@
 #if !defined(STM32_SERIAL_LPUART1_PRIORITY) || defined(__DOXYGEN__)
 #define STM32_SERIAL_LPUART1_PRIORITY       12
 #endif
+
+/**
+ * @brief   Input buffer size for USART1.
+ */
+#if !defined(STM32_SERIAL_USART1_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART1_IN_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for USART1.
+ */
+#if !defined(STM32_SERIAL_USART1_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART1_OUT_BUF_SIZE    SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for USART2.
+ */
+#if !defined(STM32_SERIAL_USART2_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART2_IN_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for USART2.
+ */
+#if !defined(STM32_SERIAL_USART2_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART2_OUT_BUF_SIZE    SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for USART3.
+ */
+#if !defined(STM32_SERIAL_USART3_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART3_IN_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for USART3.
+ */
+#if !defined(STM32_SERIAL_USART3_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART3_OUT_BUF_SIZE    SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART4.
+ */
+#if !defined(STM32_SERIAL_UART4_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART4_IN_BUF_SIZE      SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART4.
+ */
+#if !defined(STM32_SERIAL_UART4_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART4_OUT_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART5.
+ */
+#if !defined(STM32_SERIAL_UART5_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART5_IN_BUF_SIZE      SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART5.
+ */
+#if !defined(STM32_SERIAL_UART5_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART5_OUT_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for USART6.
+ */
+#if !defined(STM32_SERIAL_USART6_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART6_IN_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for USART6.
+ */
+#if !defined(STM32_SERIAL_USART6_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_USART6_OUT_BUF_SIZE    SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART7.
+ */
+#if !defined(STM32_SERIAL_UART7_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART7_IN_BUF_SIZE      SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART7.
+ */
+#if !defined(STM32_SERIAL_UART7_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART7_OUT_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART8.
+ */
+#if !defined(STM32_SERIAL_UART8_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART8_IN_BUF_SIZE      SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART8.
+ */
+#if !defined(STM32_SERIAL_UART8_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_UART8_OUT_BUF_SIZE     SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for LPUART1.
+ */
+#if !defined(STM32_SERIAL_LPUART1_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_LPUART1_IN_BUF_SIZE    SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for LPUART1.
+ */
+#if !defined(STM32_SERIAL_LPUART1_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define STM32_SERIAL_LPUART1_OUT_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
 /** @} */
 
 /*===========================================================================*/
@@ -250,6 +385,17 @@
 #error "Invalid IRQ priority assigned to USART2"
 #endif
 
+#if defined(STM32_USART3_8_HANDLER)
+
+#if (STM32_SERIAL_USE_USART3 || STM32_SERIAL_USE_UART4  ||                  \
+     STM32_SERIAL_USE_UART5  || STM32_SERIAL_USE_USART6 ||                  \
+     STM32_SERIAL_USE_UART7  || STM32_SERIAL_USE_UART8) &&                  \
+     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_SERIAL_USART3_8_PRIORITY)
+#error "Invalid IRQ priority assigned to USART3..8"
+#endif
+
+#else /* !defined(STM32_USART3_8_HANDLER) */
+
 #if STM32_SERIAL_USE_USART3 &&                                              \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_SERIAL_USART3_PRIORITY)
 #error "Invalid IRQ priority assigned to USART3"
@@ -279,6 +425,8 @@
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_SERIAL_UART8_PRIORITY)
 #error "Invalid IRQ priority assigned to UART8"
 #endif
+
+#endif /* !defined(STM32_USART3_8_HANDLER) */
 
 #if STM32_SERIAL_USE_LPUART1 &&                                               \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_SERIAL_LPUART1_PRIORITY)
@@ -328,11 +476,11 @@ typedef struct {
   input_queue_t             iqueue;                                         \
   /* Output queue.*/                                                        \
   output_queue_t            oqueue;                                         \
+  /* End of the mandatory fields.*/                                         \
   /* Input circular buffer.*/                                               \
   uint8_t                   ib[SERIAL_BUFFERS_SIZE];                        \
   /* Output circular buffer.*/                                              \
   uint8_t                   ob[SERIAL_BUFFERS_SIZE];                        \
-  /* End of the mandatory fields.*/                                         \
   /* Pointer to the USART registers block.*/                                \
   USART_TypeDef             *usart;                                         \
   /* Clock frequency for the associated USART/UART.*/                       \

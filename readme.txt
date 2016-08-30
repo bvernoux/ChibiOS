@@ -79,6 +79,12 @@
 *****************************************************************************
 
 *** Next ***
+- HAL: Added an advanced buffering mode to the serial driver, now, if the
+       LLD supports it, it is possible to set the size of each queue
+       independently.
+- EX:  Added compass implementation for ST LSM303DLHC device.
+- EX:  Added accelerometer implementation for ST LSM303DLHC device.
+- EX:  Added gyroscope implementation for ST L3GD20 device.
 - HAL: Added events handling to the PAL driver. The EXT driver is now
        deprecated but still supported.
 - EX:  Added flash implementation for Micron M25Qxxx devices.
@@ -120,6 +126,31 @@
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- HAL: Fixed invalid output initialization for STM32 DACx channels 2
+       (bug #773)(backported to 16.1.6).
+- HAL: Fixed CAN inclusion path missing for STM32F107 (bug #772)(backported
+       to 16.1.6).
+- HAL: Fixed extra brackets in STM32F0 registry (bug #771)(backported
+       to 16.1.6).
+- HAL: Fixed STM32 CAN filters initialization problem (bug #770)(backported
+       to 16.1.6, 3.0.6, 2.6.10).
+- HAL: Fixed wrong bit mask in STM32L0xx port (bug #769)(backported to 16.1.6).
+- HAL: Fixed potential wait states problem in STM32L4 initialization code
+       (bug #768)(backported to 16.1.6).
+- HAL: Fixed SDIO driver not compiling on STM32F446 devices (bug #767)
+       (backported to 16.1.6).
+- HAL: Fixed error in STM32L4xx ST headers (bug #766)(backported to 16.1.6).
+- HAL: Fixed wrong check in win32 simulator serial driver (bug #765)
+       (backported to 16.1.6, 3.0.6, 2.6.10).
+- HAL: Fixed dependency on RT in hal_usb.c (bug #764)(backported to 16.1.6).
+- HAL: Fixed wrong backup domain reset in STM32L4xx\hal_lld (bug #763)
+       (backported to 16.1.6).
+- HAL: Fixed wrong PWR configurations in STM32L4xx\hal_lld (bug #761)
+       (backported to 16.1.5).
+- HAL: Fixed wrong comment in STM32L4xx\hal_lld (bug #760)
+       (backported to 16.1.5).
+- HAL: Fixed wrong MSIRANGE management for STM32L4xx in function 
+       stm32_clock_init() (bug #759)(backported to 16.1.5).
 - HAL: Fixed problem in USB driver when changing configuration (bug #757).
 - HAL: Fixed bug in function usbDisableEndpointsI() (bug #756)(backported
        to 16.1.5).

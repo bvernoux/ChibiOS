@@ -31,6 +31,26 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
+/*
+ * The following definitions are missing from some implementations, fixing
+ * as zeroed masks.
+ */
+#if !defined(SDIO_STA_STBITERR)
+#define SDIO_STA_STBITERR       0
+#endif
+
+#if !defined(SDIO_ICR_STBITERRC)
+#define SDIO_ICR_STBITERRC      0
+#endif
+
+#if !defined(SDIO_ICR_CEATAENDC)
+#define SDIO_ICR_CEATAENDC      0
+#endif
+
+#if !defined(SDIO_MASK_STBITERRIE)
+#define SDIO_MASK_STBITERRIE    0
+#endif
+
 /**
  * @brief Value to clear all interrupts flag at once.
  */
@@ -75,14 +95,14 @@
  * @brief   Write timeout in milliseconds.
  */
 #if !defined(STM32_SDC_WRITE_TIMEOUT_MS) || defined(__DOXYGEN__)
-#define STM32_SDC_WRITE_TIMEOUT_MS          250
+#define STM32_SDC_WRITE_TIMEOUT_MS          1000
 #endif
 
 /**
  * @brief   Read timeout in milliseconds.
  */
 #if !defined(STM32_SDC_READ_TIMEOUT_MS) || defined(__DOXYGEN__)
-#define STM32_SDC_READ_TIMEOUT_MS           25
+#define STM32_SDC_READ_TIMEOUT_MS           1000
 #endif
 
 /**

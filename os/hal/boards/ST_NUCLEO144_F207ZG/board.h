@@ -70,6 +70,7 @@
 #define GPIOA_ARD_D11               7U
 #define GPIOA_SPI1_MOSI             7U
 #define GPIOA_ZIO_D71               7U
+#define GPIOA_RMII_RX_DV            7U
 #define GPIOA_USB_SOF               8U
 #define GPIOA_USB_VBUS              9U
 #define GPIOA_USB_ID                10U
@@ -106,6 +107,7 @@
 #define GPIOB_I2S2_WS               12U
 #define GPIOB_ZIO_D18               13U
 #define GPIOB_I2S2_CK               13U
+#define GPIOB_RMII_TXD1             13U
 #define GPIOB_LED3                  14U
 #define GPIOB_ZIO_D17               15U
 #define GPIOB_I2S2_SD               15U
@@ -322,6 +324,7 @@
 #define LINE_ARD_D11                PAL_LINE(GPIOA, 7U)
 #define LINE_SPI1_MOSI              PAL_LINE(GPIOA, 7U)
 #define LINE_ZIO_D71                PAL_LINE(GPIOA, 7U)
+#define LINE_RMII_RX_DV             PAL_LINE(GPIOA, 7U)
 #define LINE_USB_SOF                PAL_LINE(GPIOA, 8U)
 #define LINE_USB_VBUS               PAL_LINE(GPIOA, 9U)
 #define LINE_USB_ID                 PAL_LINE(GPIOA, 10U)
@@ -358,6 +361,7 @@
 #define LINE_I2S2_WS                PAL_LINE(GPIOB, 12U)
 #define LINE_ZIO_D18                PAL_LINE(GPIOB, 13U)
 #define LINE_I2S2_CK                PAL_LINE(GPIOB, 13U)
+#define LINE_RMII_TXD1              PAL_LINE(GPIOB, 13U)
 #define LINE_LED3                   PAL_LINE(GPIOB, 14U)
 #define LINE_ZIO_D17                PAL_LINE(GPIOB, 15U)
 #define LINE_I2S2_SD                PAL_LINE(GPIOB, 15U)
@@ -516,7 +520,7 @@
  * PA4  - ZIO_D24 SPI3_NSS          (input pullup).
  * PA5  - ARD_D13 SPI1_SCK          (input pullup).
  * PA6  - ARD_D12 SPI1_MISO         (input pullup).
- * PA7  - ARD_D11 SPI1_MOSI ZIO_D71 (input pullup).
+ * PA7  - ARD_D11 SPI1_MOSI ZIO_D71 RMII_RX_DV(alternate 11).
  * PA8  - USB_SOF                   (alternate 10).
  * PA9  - USB_VBUS                  (analog).
  * PA10 - USB_ID                    (alternate 10).
@@ -533,7 +537,7 @@
                                      PIN_MODE_INPUT(GPIOA_ZIO_D24) |        \
                                      PIN_MODE_INPUT(GPIOA_ARD_D13) |        \
                                      PIN_MODE_INPUT(GPIOA_ARD_D12) |        \
-                                     PIN_MODE_INPUT(GPIOA_ARD_D11) |        \
+                                     PIN_MODE_ALTERNATE(GPIOA_ARD_D11) |    \
                                      PIN_MODE_ALTERNATE(GPIOA_USB_SOF) |    \
                                      PIN_MODE_ANALOG(GPIOA_USB_VBUS) |      \
                                      PIN_MODE_ALTERNATE(GPIOA_USB_ID) |     \
@@ -613,7 +617,7 @@
                                      PIN_AFIO_AF(GPIOA_ZIO_D24, 0) |        \
                                      PIN_AFIO_AF(GPIOA_ARD_D13, 0) |        \
                                      PIN_AFIO_AF(GPIOA_ARD_D12, 0) |        \
-                                     PIN_AFIO_AF(GPIOA_ARD_D11, 0))
+                                     PIN_AFIO_AF(GPIOA_ARD_D11, 11))
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_USB_SOF, 10) |       \
                                      PIN_AFIO_AF(GPIOA_USB_VBUS, 0) |       \
                                      PIN_AFIO_AF(GPIOA_USB_ID, 10) |        \
@@ -639,7 +643,7 @@
  * PB10 - ZIO_D36 TIM2_CH3          (input pullup).
  * PB11 - ZIO_D35 TIM2_CH4          (input pullup).
  * PB12 - ZIO_D19 I2S2_WS           (input pullup).
- * PB13 - ZIO_D18 I2S2_CK           (input pullup).
+ * PB13 - ZIO_D18 I2S2_CK RMII_TXD1 (alternate 11).
  * PB14 - LED3                      (output pushpull maximum).
  * PB15 - ZIO_D17 I2S2_SD           (input pullup).
  */
@@ -656,7 +660,7 @@
                                      PIN_MODE_INPUT(GPIOB_ZIO_D36) |        \
                                      PIN_MODE_INPUT(GPIOB_ZIO_D35) |        \
                                      PIN_MODE_INPUT(GPIOB_ZIO_D19) |        \
-                                     PIN_MODE_INPUT(GPIOB_ZIO_D18) |        \
+                                     PIN_MODE_ALTERNATE(GPIOB_ZIO_D18) |    \
                                      PIN_MODE_OUTPUT(GPIOB_LED3) |          \
                                      PIN_MODE_INPUT(GPIOB_ZIO_D17))
 #define VAL_GPIOB_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOB_ZIO_D33) |    \
@@ -736,7 +740,7 @@
                                      PIN_AFIO_AF(GPIOB_ZIO_D36, 0) |        \
                                      PIN_AFIO_AF(GPIOB_ZIO_D35, 0) |        \
                                      PIN_AFIO_AF(GPIOB_ZIO_D19, 0) |        \
-                                     PIN_AFIO_AF(GPIOB_ZIO_D18, 0) |        \
+                                     PIN_AFIO_AF(GPIOB_ZIO_D18, 11) |       \
                                      PIN_AFIO_AF(GPIOB_LED3, 0) |           \
                                      PIN_AFIO_AF(GPIOB_ZIO_D17, 0))
 
