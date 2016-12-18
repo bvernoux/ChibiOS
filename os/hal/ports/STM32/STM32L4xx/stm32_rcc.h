@@ -267,7 +267,6 @@
 }
 /** @} */
 
-
 /**
  * @name    ADC peripherals specific RCC operations
  * @{
@@ -412,7 +411,6 @@
  */
 #define rccResetPWRInterface() rccResetAPB1R1(RCC_APB1RSTR1_PWRRST)
 /** @} */
-
 
 /**
  * @name    CAN peripherals specific RCC operations
@@ -1127,6 +1125,36 @@
  * @api
  */
 #define rccResetLPUART1() rccResetAPB1R2(RCC_APB1RSTR2_LPUART1RST)
+/** @} */
+
+/**
+ * @name    USB peripheral specific RCC operations
+ * @{
+ */
+/**
+ * @brief   Enables the USB peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableUSB(lp) rccEnableAPB1R1(RCC_APB1ENR1_USBFSEN, lp)
+
+/**
+ * @brief   Disables the USB peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccDisableUSB(lp) rccDisableAPB1R1(RCC_APB1ENR1_USBFSEN, lp)
+
+/**
+ * @brief   Resets the USB peripheral.
+ *
+ * @api
+ */
+#define rccResetUSB() rccResetAPB1R1(RCC_APB1RSTR1_USBFSRST)
 /** @} */
 
 /**

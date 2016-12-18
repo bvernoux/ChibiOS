@@ -86,6 +86,18 @@
 #define STM32_CAN2_RX1_NUMBER               65
 #define STM32_CAN2_SCE_NUMBER               66
 
+#define STM32_CAN3_MAX_FILTERS              14
+
+#define STM32_HAS_CAN3                      TRUE
+#define STM32_CAN3_TX_HANDLER               Vector1E0
+#define STM32_CAN3_RX0_HANDLER              Vector1E4
+#define STM32_CAN3_RX1_HANDLER              Vector1E8
+#define STM32_CAN3_SCE_HANDLER              Vector1EC
+#define STM32_CAN3_TX_NUMBER                104
+#define STM32_CAN3_RX0_NUMBER               105
+#define STM32_CAN3_RX1_NUMBER               106
+#define STM32_CAN3_SCE_NUMBER               107
+
 /* DAC attributes.*/
 #define STM32_HAS_DAC1_CH1                  TRUE
 #define STM32_DAC1_CH1_DMA_MSK              STM32_DMA_STREAM_ID_MSK(1, 5)
@@ -462,10 +474,12 @@
 /* USB attributes.*/
 #define STM32_OTG_STEPPING                  2
 #define STM32_HAS_OTG1                      TRUE
+#define STM32_OTG1_ENDPOINTS                5
 #define STM32_OTG1_HANDLER                  Vector14C
 #define STM32_OTG1_NUMBER                   67
 
 #define STM32_HAS_OTG2                      TRUE
+#define STM32_OTG2_ENDPOINTS                8
 #define STM32_OTG2_HANDLER                  Vector174
 #define STM32_OTG2_EP1OUT_HANDLER           Vector168
 #define STM32_OTG2_EP1IN_HANDLER            Vector16C
@@ -474,6 +488,7 @@
 #define STM32_OTG2_EP1IN_NUMBER             75
 
 #define STM32_HAS_USB                       FALSE
+
 /* IWDG attributes.*/
 #define STM32_HAS_IWDG                      TRUE
 #define STM32_IWDG_IS_WINDOWED              TRUE

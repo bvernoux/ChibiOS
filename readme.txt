@@ -86,6 +86,13 @@
 *****************************************************************************
 
 *** Next ***
+- HAL: Added CAN3 support to the STM32 CANv1 driver.
+- HAL: Added support for all existing STM32 Nucleo and Discovery boards.
+- HAL: Extended STM32F4xx port by adding STM32F412 support.
+- HAL: Extended STM32L4xx port by adding STM32L432 support.
+- HAL: Implemented better handling for number of endpoints on STM32 OTGv1
+       driver, now it is a registry key.
+- VAR: Updated CMSIS file for STM32F1xx to 4.1.0.
 - EX:  Added thermometer implementation for ST HTS221 device.
 - EX:  Added hygrometer implementation for ST HTS221 device.
 - EX:  Added barometer implementation for ST LPS25H device.
@@ -111,6 +118,7 @@
 - HAL: Added QSPI driver model.
 - HAL: Added base sensor, base gyroscope, base accelerometer and base compass
        classes.
+- HAL: Updated all STM32 Nucleo board files.
 - VAR: Cortex-M VTOR initialization is now performed in startup files and
        no more in port initialization.
 - VAR: Changed GCC asm files extension from .s to .S because conventions.
@@ -127,8 +135,6 @@
 - HAL: Improvements to the I/O queues now timeouts are absolute for
        iqReadTimeout() and oqWriteTimeout() functions.
 - RT:  Added a NASA-OSAL API emulator over the RT kernel.
-- RT:  Added RT-STM32L476-DISCOVERY demo.
-- HAL: Added more STM32L4xx testhal demos.
 - HAL: Updated all STM32L476 mcuconf.h files.
 - ALL: Startup files relicensed under Apache 2.0.
 - ALL: Enhanced GCC .ld files with multiple flash regions and capability to
@@ -144,6 +150,36 @@
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- VAR: Fixed missing const qualifier in local shell commands array (bug #797)
+       (backported to 16.1.6, 3.0.6, 2.6.10).
+- VAR: Fixed compilation error in cmsis_os.h (bug #796)(backported to 16.1.6,
+       3.0.6).
+- HAL: Fixed double empty lines in HAL (bug #794)(backported to 16.1.6, 
+       3.0.6, 2.6.10).
+- RT:  Fixed double empty lines in RT (bug #793)(backported to 16.1.6, 3.0.6).
+- HAL: Fixed wrong entries in STM32L4 registry (bug #792)(backported to 
+       16.1.6).
+- HAL: Fixed missing ARPE bit in CR1 initialization on STM32 GPT driver
+       (bug #791)(backported to 16.1.6, 3.0.6).
+- HAL: Fixed wrong DMA definition for STM32F303x8 ADC (bug #790)(backported
+       to 16.1.6).
+- VAR: Fixed GCC garbage collector discards code in syscalls.c (bug #789)
+       (backported to 16.1.6, 3.0.6).
+- HAL: Fixed Makefile dependencies not generated for .S files (bug #787)
+       (backported to 16.1.6, 3.0.6).
+- HAL: Fixed OTGv1 driver not functional on STM32L4 (bug #786)(backported
+       to 16.1.6).
+- HAL: Fixed wrong bit offset in STM32F37x ADC_CR2_EXTSEL_SRC() macro
+       (bug #785)(backported to 16.1.6, 3.0.6).
+- RT:  Fixed tick-less mode can fail in RT for very large delays (bug #784)
+       (backported to 16.1.6, 3.0.6).
+- HAL: Fixed STM32L0xx CCIPR initialization (bug #783) 
+       (backported to 16.1.6).
+- HAL: Fixed STM32F105 port not compiling (bug #782)
+       (backported to 16.1.6, 3.0.6, 2.6.10).
+       (bug #780)(backported to 16.1.6, 3.0.6).
+- HAL: Fixed wrong registry for STM32F205xx and STM32F215xx port 
+       (bug #780)(backported to 16.1.6, 3.0.6).
 - HAL: Fixed wrong HSE checks and PLL2 enable switch in STM32F105 and
        STM32F107 port (bug #779)(backported to 16.1.6, 3.0.6, 2.6.10).
 - HAL: Fixed wrong SRAM2_BASE in STM32F7xx port (bug #778)
