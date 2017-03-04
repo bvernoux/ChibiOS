@@ -52,9 +52,11 @@
   |  |  +--dox/           - HAL documentation resources.
   |  |  +--include/       - HAL high level headers.
   |  |  +--lib/           - HAL libraries.
+  |  |  |  +--fallback/   - HAL fall back software drivers.
   |  |  |  +--peripherals/- HAL peripherals interfaces.
   |  |  |  +--streams/    - HAL streams.
   |  |  +--osal/          - HAL OSAL implementations.
+  |  |  |  +--lib/        - HAL OSAL common modules.
   |  |  +--src/           - HAL high level source.
   |  |  +--ports/         - HAL ports.
   |  |  +--templates/     - HAL driver template files.
@@ -86,6 +88,11 @@
 *****************************************************************************
 
 *** Next ***
+- HAL: Added support for STM32F3 Discovery REV-C or higher.
+- EXT: Integrated latest FatFS 0.12b.
+- HAL: Implemented separated virtual timers module under /os/hal/osal/lib,
+       it can be used by OSAL implementations where the underlying RTOS is
+       lacking a timeout feature or missing.
 - HAL: Added CAN3 support to the STM32 CANv1 driver.
 - HAL: Added support for all existing STM32 Nucleo and Discovery boards.
 - HAL: Extended STM32F4xx port by adding STM32F412 support.
@@ -150,6 +157,46 @@
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- HAL: Fixed DAC driver problem with API signature (bug #817)(backported
+       to 16.1.8).
+- HAL: Fixed STM32 OTGv1 driver not serving interrupts for endpoints > 5
+       (bug #816)(backported to 16.1.8).
+- HAL: Fixed STM32 MAC driver needs __DSB() for STM32F7 when operating in
+       SRAM1/2 (bug #815)(backported to 16.1.8).
+- VAR: Fixed BYTE_ORDER redefined in lwip_bindings/arch/cc.h (bug #814)
+       (backported to 16.1.7).
+- HAL: Fixed setting alternate mode in STM32 GPIOv3 and GPIOv3 drivers can fail
+       (bug #813)(backported to 16.1.7).
+- HAL: Fixed incorrect handling of shared ISRs in STM32 DMAv1 driver
+       (bug #812)(backported to 16.1.7).
+- HAL: Fixed protocol violation in usbDisableEndpointsI() API (bug #811) 
+       (backported to 16.1.7).
+- HAL: Fixed incorrect constants STM32_DAC1_CHx_DMA_CHN for STM32F7 (bug #810)
+       (backported to 16.1.7).
+- HAL: Fixed redefined TIM in STM32F030 registry (bug #809) 
+       (backported to 16.1.7).
+- HAL: Fixed clock init in STM32F0x port which doesn't take in account
+       PLL_XTPRE and PREDIV_0 are hard-wired (bug #808) 
+       (backported to 16.1.7).
+- HAL: Fixed wrong initialization in ADC lld v3 (bug #807)
+       (backported to 16.1.6).
+- HAL: Fixed wrong clock init in STM32F0 port ad added more error checks 
+       (bug #806)(backported to 16.1.6).
+- HAL: Fixed misplaced else in STM32F0 port (bug #805)
+       (backported to 16.1.6).
+- HAL: Fixed flash waiting state misconfiguration in STM32L4 port (bug #804)
+       (backported to 16.1.6).
+- HAL: Added CR field to DAC configuration in STM32 port (bug #803)
+       (backported to 16.1.6).
+- HAL: Fixed wrong initialization for DACD4 in STM32 port (bug #802)
+       (backported to 16.1.6).
+- HAL: Fixed tab instead of space in dac driver (bug #801)
+       (backported to 16.1.6).
+- HAL: Fixed missing GPT and DAC in STM32F07/​9x mcuconf (bug #800)
+       (backported to 16.1.6).
+- HAL: Fixed STM32 RTCv2 driver does not handle the DST bit (bug #799)
+       (backported to 16.1.6).
+- HAL: Fixed MAC driver broken on STM32F107 (bug #798)(backported to 16.1.6).
 - VAR: Fixed missing const qualifier in local shell commands array (bug #797)
        (backported to 16.1.6, 3.0.6, 2.6.10).
 - VAR: Fixed compilation error in cmsis_os.h (bug #796)(backported to 16.1.6,
@@ -177,7 +224,6 @@
        (backported to 16.1.6).
 - HAL: Fixed STM32F105 port not compiling (bug #782)
        (backported to 16.1.6, 3.0.6, 2.6.10).
-       (bug #780)(backported to 16.1.6, 3.0.6).
 - HAL: Fixed wrong registry for STM32F205xx and STM32F215xx port 
        (bug #780)(backported to 16.1.6, 3.0.6).
 - HAL: Fixed wrong HSE checks and PLL2 enable switch in STM32F105 and

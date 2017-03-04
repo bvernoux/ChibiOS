@@ -26,7 +26,7 @@ THD_FUNCTION(Thread1, arg) {
 
   (void)arg;
 
-  chRegSetThreadName("blinker");
+  chRegSetThreadName("blinker 1");
   while (true) {
     palToggleLine(LINE_LED3_RED);
     chThdSleepMilliseconds(100);
@@ -47,7 +47,7 @@ THD_FUNCTION(Thread2, arg) {
 
   (void)arg;
 
-  chRegSetThreadName("blinker");
+  chRegSetThreadName("blinker 2");
   while (true) {
     chThdSleepMilliseconds(50);
     palToggleLine(LINE_LED5_ORANGE);
