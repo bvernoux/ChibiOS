@@ -34,7 +34,7 @@ endif
 ifeq ($(BUILDDIR),.)
   BUILDDIR = build
 endif
-OUTFILES = $(BUILDDIR)/$(PROJECT).exe
+OUTFILES = $(BUILDDIR)/$(PROJECT)
            
 
 # Source files groups and paths
@@ -143,7 +143,7 @@ else
 	@$(CC) -c $(ASXFLAGS) -I. $(IINCDIR) $< -o $@
 endif
 
-%.exe: $(OBJS)
+$(BUILDDIR)/$(PROJECT): $(OBJS)
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
 	$(LD) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
@@ -159,11 +159,13 @@ $(BUILDDIR)/lib$(PROJECT).a: $(OBJS)
 	@echo
 	@echo Done
 
-clean:
+clean: CLEAN_RULE_HOOK
 	@echo Cleaning
 	-rm -fR .dep $(BUILDDIR)
 	@echo
 	@echo Done
+
+CLEAN_RULE_HOOK:
 
 .PHONY: gcov
 gcov:

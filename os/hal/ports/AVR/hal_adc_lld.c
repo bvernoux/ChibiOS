@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    AVR/adc_lld.c
+ * @file    hal_adc_lld.c
  * @brief   ADC Driver subsystem low level driver source.
  *
  * @addtogroup ADC
@@ -57,6 +57,7 @@ static size_t getAdcChannelNumberFromMask(uint8_t mask, uint8_t currentChannel) 
   }
 
   /* error, should never reach this line */
+  return -1; // To check
 }
 
 static void setAdcChannel(uint8_t channelNum) {
@@ -90,7 +91,8 @@ OSAL_IRQ_HANDLER(ADC_vect) {
 
   if (ADCD1.currentBufferPosition == bufferSize) {
     _adc_isr_full_code(&ADCD1);
-  } else {
+  }
+  else {
     setAdcChannel(getAdcChannelNumberFromMask(ADCD1.grpp->channelsMask,currentChannel));
     ADCSRA |= 1 << ADSC;
   }

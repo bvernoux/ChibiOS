@@ -59,7 +59,7 @@ static const dacsample_t dac_buffer[DAC_BUFFER_SIZE] = {
  * DAC streaming callback.
  */
 size_t nx = 0, ny = 0, nz = 0;
-static void end_cb1(DACDriver *dacp, const dacsample_t *buffer, size_t n) {
+static void end_cb1(DACDriver *dacp, dacsample_t *buffer, size_t n) {
 
   (void)dacp;
 
@@ -89,7 +89,8 @@ static void error_cb1(DACDriver *dacp, dacerror_t err) {
 
 static const DACConfig dac1cfg1 = {
   .init         = 2047U,
-  .datamode     = DAC_DHRM_12BIT_RIGHT
+  .datamode     = DAC_DHRM_12BIT_RIGHT,
+  .cr           = 0
 };
 
 static const DACConversionGroup dacgrpcfg1 = {
@@ -139,7 +140,8 @@ int main(void) {
   /*
    * Starting a continuous conversion.
    */
-  dacStartConversion(&DACD1, &dacgrpcfg1, dac_buffer, DAC_BUFFER_SIZE);
+  dacStartConversion(&DACD1, &dacgrpcfg1,
+                     (dacsample_t *)dac_buffer, DAC_BUFFER_SIZE);
   gptStartContinuous(&GPTD6, 2U);
 
   /*

@@ -68,6 +68,7 @@ CANDriver CAND3;
 /**
  * @brief   Programs the filters of CAN 1 and CAN 2.
  *
+ * @param[in] canp      pointer to the @p CANDriver object
  * @param[in] can2sb    number of the first filter assigned to CAN2
  * @param[in] num       number of entries in the filters array, if zero then
  *                      a default filter is programmed
@@ -80,6 +81,7 @@ static void can_lld_set_filters(CANDriver* canp,
                                 uint32_t can2sb,
                                 uint32_t num,
                                 const CANFilter *cfp) {
+
 #if STM32_CAN_USE_CAN2
   if(canp == &CAND2) {
     /* Set handle to CAN1, because CAN1 manages the filters of CAN2.*/
@@ -96,6 +98,7 @@ static void can_lld_set_filters(CANDriver* canp,
     canp->can->FMR = (canp->can->FMR & 0xFFFF0000) | (can2sb << 8) | CAN_FMR_FINIT;
   }
 #endif
+
 #if STM32_CAN_USE_CAN3
   if(canp == &CAND3) {
     rccEnableCAN3(FALSE);
@@ -121,6 +124,7 @@ static void can_lld_set_filters(CANDriver* canp,
       }
     }
 #endif
+
 #if STM32_CAN_USE_CAN3
     if(canp == &CAND3) {
       for (i = 0; i < STM32_CAN3_MAX_FILTERS; i++) {
@@ -129,6 +133,7 @@ static void can_lld_set_filters(CANDriver* canp,
       }
     }
 #endif
+
     /* Scanning the filters array.*/
     for (i = 0; i < num; i++) {
       fmask = 1 << cfp->filter;
@@ -1002,6 +1007,7 @@ void can_lld_wakeup(CANDriver *canp) {
  * @brief   Programs the filters.
  * @note    This is an STM32-specific API.
  *
+ * @param[in] canp      pointer to the @p CANDriver object
  * @param[in] can2sb    number of the first filter assigned to CAN2
  * @param[in] num       number of entries in the filters array, if zero then
  *                      a default filter is programmed
@@ -1010,10 +1016,11 @@ void can_lld_wakeup(CANDriver *canp) {
  *
  * @api
  */
-void canSTM32SetFilters(CANDriver *canp, uint32_t can2sb, uint32_t num, const CANFilter *cfp) {
+void canSTM32SetFilters(CANDriver *canp, uint32_t can2sb,
+                        uint32_t num, const CANFilter *cfp) {
 
 #if STM32_CAN_USE_CAN2
-  osalDbgCheck((can2sb >= 0) && (can2sb <= STM32_CAN_MAX_FILTERS) &&
+  osalDbgCheck((can2sb <= STM32_CAN_MAX_FILTERS) &&
                (num <= STM32_CAN_MAX_FILTERS));
 #endif
 

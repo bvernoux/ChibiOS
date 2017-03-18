@@ -156,7 +156,11 @@ void stm32_clock_init(void) {
 
 #if !STM32_NO_INIT
   /* PWR clock enable.*/
-  RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN;
+#if defined(HAL_USE_RTC) && defined(RCC_APB1ENR1_RTCAPBEN)
+  RCC->APB1ENR1 = RCC_APB1ENR1_PWREN | RCC_APB1ENR1_RTCAPBEN;
+#else
+  RCC->APB1ENR1 = RCC_APB1ENR1_PWREN;
+#endif
 
   /* Initial clocks setup and wait for MSI stabilization, the MSI clock is
      always enabled because it is the fall back clock when PLL the fails.
@@ -309,7 +313,7 @@ void stm32_clock_init(void) {
 
   /* Set flash WS's for SYSCLK source */
   if (STM32_FLASHBITS > STM32_MSI_FLASHBITS)
-    FLASH->ACR = STM32_FLASHBITS;
+    FLASH->ACR = (FLASH->ACR & ~FLASH_ACR_LATENCY_Msk) | STM32_FLASHBITS;
 
   /* Switching to the configured SYSCLK source if it is different from MSI.*/
 #if (STM32_SW != STM32_SW_MSI)
@@ -321,7 +325,7 @@ void stm32_clock_init(void) {
 
   /* Reduce the flash WS's for SYSCLK source if they are less than MSI WSs */
   if (STM32_FLASHBITS < STM32_MSI_FLASHBITS)
-    FLASH->ACR = STM32_FLASHBITS;
+    FLASH->ACR = (FLASH->ACR & ~FLASH_ACR_LATENCY_Msk) | STM32_FLASHBITS;
 
 #endif /* STM32_NO_INIT */
 

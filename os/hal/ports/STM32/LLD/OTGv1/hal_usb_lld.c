@@ -115,7 +115,7 @@ static const USBEndpointConfig ep0config = {
 static const stm32_otg_params_t fsparams = {
   STM32_USB_OTG1_RX_FIFO_SIZE / 4,
   STM32_OTG1_FIFO_MEM_SIZE,
-  STM32_OTG1_ENDOPOINTS_NUMBER
+  STM32_OTG1_ENDPOINTS
 };
 #endif
 
@@ -123,7 +123,7 @@ static const stm32_otg_params_t fsparams = {
 static const stm32_otg_params_t hsparams = {
   STM32_USB_OTG2_RX_FIFO_SIZE / 4,
   STM32_OTG2_FIFO_MEM_SIZE,
-  STM32_OTG2_ENDOPOINTS_NUMBER
+  STM32_OTG2_ENDPOINTS
 };
 #endif
 
@@ -600,22 +600,6 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
 
   /* IN/OUT endpoints event handling.*/
   src = otgp->DAINT;
-  if (sts & GINTSTS_IEPINT) {
-    if (src & (1 << 0))
-      otg_epin_handler(usbp, 0);
-    if (src & (1 << 1))
-      otg_epin_handler(usbp, 1);
-    if (src & (1 << 2))
-      otg_epin_handler(usbp, 2);
-    if (src & (1 << 3))
-      otg_epin_handler(usbp, 3);
-#if STM32_USB_USE_OTG2
-    if (src & (1 << 4))
-      otg_epin_handler(usbp, 4);
-    if (src & (1 << 5))
-      otg_epin_handler(usbp, 5);
-#endif
-  }
   if (sts & GINTSTS_OEPINT) {
     if (src & (1 << 16))
       otg_epout_handler(usbp, 0);
@@ -625,11 +609,55 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
       otg_epout_handler(usbp, 2);
     if (src & (1 << 19))
       otg_epout_handler(usbp, 3);
-#if STM32_USB_USE_OTG2
+#if USB_MAX_ENDPOINTS >= 4
     if (src & (1 << 20))
       otg_epout_handler(usbp, 4);
+#endif
+#if USB_MAX_ENDPOINTS >= 5
     if (src & (1 << 21))
       otg_epout_handler(usbp, 5);
+#endif
+#if USB_MAX_ENDPOINTS >= 6
+    if (src & (1 << 22))
+      otg_epout_handler(usbp, 6);
+#endif
+#if USB_MAX_ENDPOINTS >= 7
+    if (src & (1 << 23))
+      otg_epout_handler(usbp, 7);
+#endif
+#if USB_MAX_ENDPOINTS >= 8
+    if (src & (1 << 24))
+      otg_epout_handler(usbp, 8);
+#endif
+  }
+  if (sts & GINTSTS_IEPINT) {
+    if (src & (1 << 0))
+      otg_epin_handler(usbp, 0);
+    if (src & (1 << 1))
+      otg_epin_handler(usbp, 1);
+    if (src & (1 << 2))
+      otg_epin_handler(usbp, 2);
+    if (src & (1 << 3))
+      otg_epin_handler(usbp, 3);
+#if USB_MAX_ENDPOINTS >= 4
+    if (src & (1 << 4))
+      otg_epin_handler(usbp, 4);
+#endif
+#if USB_MAX_ENDPOINTS >= 5
+    if (src & (1 << 5))
+      otg_epin_handler(usbp, 5);
+#endif
+#if USB_MAX_ENDPOINTS >= 6
+    if (src & (1 << 6))
+      otg_epin_handler(usbp, 6);
+#endif
+#if USB_MAX_ENDPOINTS >= 7
+    if (src & (1 << 7))
+      otg_epin_handler(usbp, 7);
+#endif
+#if USB_MAX_ENDPOINTS >= 8
+    if (src & (1 << 8))
+      otg_epin_handler(usbp, 8);
 #endif
   }
 }

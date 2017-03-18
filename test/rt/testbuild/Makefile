@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = $(XOPT)
+  USE_OPT = $(XOPT) -m32
 endif
 
 # C specific options here (added to USE_OPT).
@@ -69,7 +69,7 @@ CHIBIOS = ../../..
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/boards/simulator/board.mk
-include $(CHIBIOS)/os/hal/ports/simulator/win32/platform.mk
+include $(CHIBIOS)/os/hal/ports/simulator/posix/platform.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
@@ -116,7 +116,7 @@ GCOVSRC = $(KERNSRC)
 #
 
 #TRGT = powerpc-eabi-
-TRGT = mingw32-
+TRGT = 
 CC   = $(TRGT)gcc
 CPPC = $(TRGT)g++
 # Enable loading with g++ only if you need C++ runtime support.
@@ -159,7 +159,7 @@ UINCDIR =
 ULIBDIR =
 
 # List all user libraries here
-ULIBS = -lws2_32 -lgcov
+ULIBS = -lgcov
 
 #
 # End of user defines
@@ -169,4 +169,4 @@ RULESPATH = $(CHIBIOS)/os/common/startup/SIMIA32/compilers/GCC
 include $(RULESPATH)/rules.mk
 
 misra:
-	@lint-nt -v -w3 $(DEFS) pclint/co-gcc.lnt pclint/au-misra3.lnt pclint/waivers.lnt $(IINCDIR) $(KERNSRC)
+	@wine lint-nt -v -w3 $(DEFS) pclint/co-gcc.lnt pclint/au-misra3.lnt pclint/waivers.lnt $(IINCDIR) $(KERNSRC)
