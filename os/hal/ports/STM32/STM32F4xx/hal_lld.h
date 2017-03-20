@@ -74,7 +74,7 @@
 #define PLATFORM_NAME           "STM32F401 High Performance with DSP and FPU"
 
 #elif defined(STM32F405xx)
-#define PLATFORM_NAME           "STM32F405 High Performance with DSP and FPU"
+#define PLATFORM_NAME           "STM32F4x5 High Performance with DSP and FPU"
 
 #elif defined(STM32F407xx)
 #define PLATFORM_NAME           "STM32F407 High Performance with DSP and FPU"
