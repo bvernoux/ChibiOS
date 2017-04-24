@@ -290,6 +290,12 @@ static void otg_rxfifo_handler(USBDriver *usbp) {
     break;
   case GRXSTSP_OUT_DATA:
     cnt = (sts & GRXSTSP_BCNT_MASK) >> GRXSTSP_BCNT_OFF;
+
+    if (cnt == 0) {
+      asm ("nop");
+    }
+
+
     ep  = (sts & GRXSTSP_EPNUM_MASK) >> GRXSTSP_EPNUM_OFF;
     otg_fifo_read_to_buffer(usbp->otg->FIFO[0],
                             usbp->epc[ep]->out_state->rxbuf,
@@ -419,7 +425,7 @@ static void otg_epout_handler(USBDriver *usbp, usbep_t ep) {
     USBOutEndpointState *osp;
 
     /* Receive transfer complete, checking if it is a SETUP transfer on EP0,
-       that it must be ignored, the STUPM handler will take care of it.*/
+       than it must be ignored, the STUPM handler will take care of it.*/
     if ((ep == 0) && (usbp->ep0state == USB_EP0_WAITING_SETUP))
       return;
 

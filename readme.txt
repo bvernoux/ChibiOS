@@ -157,6 +157,19 @@
 - RT:  Merged RT4.
 - NIL: Merged NIL2.
 - NIL: Added STM32F7 demo.
+- RT:  Fixed race condition in chBMReset() (bug #828)(backported to 16.1.8).
+- HAL: Fixed wrong number of EXTI lines for STM32F303x8 (bug #827)(backported
+       to 16.1.8).
+- HAL: Fixed invalid SDC OCR initialization value (bug #826)(backported
+       to 16.1.8).
+- HAL: Fixed osThreadSetPriority() returns old priority instead of a status
+       code (bug #823)(backported to 16.1.8).
+- HAL: Fixed problem in rtcSTM32SetPeriodicWakeup() (bug #821)(backported
+       to 16.1.8).
+- HAL: Fixed STM32 RTCv1 synchronization problem (bug #820)(backported
+       to 16.1.8).
+- HAL: Fixed wrong clock source definition for LPTIM on STM32L0xx (bug #819)
+       (backported to 16.1.8).
 - HAL: Fixed STM32L432 bringup issues (bug #818)(backported to 16.1.8).
 - HAL: Fixed DAC driver problem with API signature (bug #817)(backported
        to 16.1.8).
