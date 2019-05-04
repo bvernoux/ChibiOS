@@ -89,7 +89,20 @@
 *****************************************************************************
 
 *** 17.6.5 ***
-- HAL: Fixed wrong number of endpoints fot STM32F412/413 (bug #978).
+- HAL: Fixed extra parenthesis in STM32F4 registry (bug #997).
+- HAL: Fixed timing problem in STM32 OTGv1 driver (bug #996).
+- HAL: Fixed restrictive check in MMC-SPI driver (bug #995).
+- HAL: Fixed misplaced check in STM32 ST driver (bug #994).
+- HAL: Fixed STM32F7xx I2SPLL not fully initialized (bug #992).
+- HAL: Fixed ethernet registry error for STM32F469/479 (bug #990).
+- RT:  Fixed bug in chEvtBroadcastFlagsI (bug #989).
+- HAL: Fixed NULL pointer dereferenced in N25Q driver (bug #988).
+- NIL: Fixed scheduler misbehaving in rare cases (bug #983).
+- NIL: Fixed function chThdSuspendTimeoutS() ignoring TIME_IMMEDIATE (bug #982).
+- HAL: Fixed STM32L071/72 entries in registry (bug #981).
+- HAL: Fixed TIM3 missing from STM32L0xx RCC macros (bug #980)
+- HAL: Fixed invalid STM32 ADCv3 clock selection for L4 and L4+ (bug #979).
+- HAL: Fixed wrong number of endpoints for STM32F412/413 (bug #978).
 - RT:  Fixed chEvtGetAndClearFlags(...) does not mask events (bug #977).
 - OTH: Fixed wrong timeout handling in CMSIS OS layer (bug #975).
 - HAL: Fixed mii_find_phy excludes PHY address 31 (bug #971).
