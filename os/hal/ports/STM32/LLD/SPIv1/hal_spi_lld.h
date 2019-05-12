@@ -559,6 +559,7 @@ extern SPIDriver SPID6;
 extern "C" {
 #endif
   void spi_lld_init(void);
+  void spi_slave_lld_start(SPIDriver *spip);
   void spi_lld_start(SPIDriver *spip);
   void spi_lld_stop(SPIDriver *spip);
 #if (SPI_SELECT_MODE == SPI_SELECT_MODE_LLD) || defined(__DOXYGEN__)
