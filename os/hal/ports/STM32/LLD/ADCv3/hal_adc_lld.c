@@ -96,7 +96,7 @@ ADCDriver ADCD4;
 /*===========================================================================*/
 
 static const ADCConfig default_config = {
-  difsel: 0
+  .difsel = 0
 };
 
 static uint32_t clkmask;
@@ -249,6 +249,7 @@ static void adc_lld_stop_adc(ADCDriver *adcp) {
     adcp->adcm->CR |= ADC_CR_ADSTP;
     while (adcp->adcm->CR & ADC_CR_ADSTP)
       ;
+    adcp->adcm->IER = 0;
   }
 }
 

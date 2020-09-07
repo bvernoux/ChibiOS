@@ -22,6 +22,8 @@
  * @brief   Time and intervals macros and structures.
  *
  * @addtogroup time_intervals
+ * @details This module is responsible for handling of system time and time
+ *          intervals.
  * @{
  */
 
@@ -157,7 +159,6 @@ typedef uint32_t time_conv_t;
 /*===========================================================================*/
 /* Module macros.                                                            */
 /*===========================================================================*/
-
 
 /**
  * @name    Fast time conversion utilities
@@ -440,7 +441,7 @@ static inline systime_t chTimeAddX(systime_t systime,
                                    sysinterval_t interval) {
 
 #if CH_CFG_ST_RESOLUTION != CH_CFG_INTERVALS_SIZE
-  chDbgCheck(interval <= (sysinterval_t)((systime_t)-1));
+  chDbgCheck(interval <= (sysinterval_t)TIME_MAX_SYSTIME);
 #endif
 
   return systime + (systime_t)interval;
@@ -465,8 +466,8 @@ static inline sysinterval_t chTimeDiffX(systime_t start, systime_t end) {
 
 /**
  * @brief   Checks if the specified time is within the specified time range.
- * @note    When start==end then the function returns always true because the
- *          whole time range is specified.
+ * @note    When start==end then the function returns always false because the
+ *          time window has zero size.
  *
  * @param[in] time      the time to be verified
  * @param[in] start     the start of the time window (inclusive)

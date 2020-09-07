@@ -88,6 +88,43 @@
 *** 18.2.3 ***
 - NEW: Added a check on defective GCC versions, Cortex-M0 only.
 - NEW: Extra timer checks in STM32 ST driver.
+- FIX: Fixed problem in chMtxUnlockAllS() (bug #1076).
+- FIX: Fixed state check in CMSIS osKernelInitialize() wrapper (bug #1075).
+- FIX: Fixed missing IRQ disabling in ADCv1 and ADCv3 STM32 drivers (bug #1073).
+- FIX: Fixed missing parenthesis in ADC _adc_isr_error_code macro (bug #1072).
+- FIX: Fixed non-standard declaration in STM32 ADCv3 driver (bug #1070).
+- FIX: Fixed problem in the I2C fallback driver (bug #1069).
+- FIX: Fixed TIM8 missing on STM32H7xx (bug #1068).
+- FIX: Fixed Sharing issues with GPT TIMv1 driver (bug #1067).
+- FIX: Fixed wrong check on STM32_DAC_DUAL_MODE in DACv1 STM32 driver
+       (bug #1065).
+- FIX: Fixed I2Cv1 extra interrupts (bug #1064).
+- FIX: Fixed I2C4 broken on STM32H7xx (bug #1063).
+- FIX: Fixed I2C fallback driver broken (bug #1061).
+- FIX: Fixed STM32 ADC1 sample time macros (bug #1059).
+- FIX: Fixed STM32 ADCv1 error callback disabled on some devices (bug #1058).
+- FIX: Fixed error in uartSendFullTimeout() HAL function (bug #1057).
+- FIX: Fixed OS-less Cortex-M OSAL problem with critical zones (bug #1056).
+- FIX: Fixed assertion triggered in STM32 OTGv1 driver (bug #1053).
+- FIX: Fixed STM32 CANv1 compile fails if CAN3 is used alone (bug #1052).
+- FIX: Fixed wrong clock disable check in STM32 DACv1 driver (bug #1050).
+- FIX: Fixed wrong debug check in STM32 I2Cv1 driver (bug #1048).
+- FIX: Fixed warning in simulator PAL driver (bug #1047).
+- FIX: Fixed board initialization failure on STM32F030x6 (bug #1046).
+- FIX: Fixed STM32 I2Cv1 BTF event not cleared (bug #1045).
+- FIX: Fixed STM32F7 I2C registry dma channel (bug #1043).
+- FIX: Fixed missing DMA definitions for STM32F412 I2C3 (bug #1041).
+- FIX: Fixed missing I2C4 RCC definitions for L4/L4+ (bug #1036).
+- FIX: Fixed missing delay after STM32 wait states setup (bug #1035).
+- FIX: Fixed reduced time slices in RT (bug #1034).
+- FIX: Fixed GCC scatter files alignment problem (bug #1033).
+- FIX: Fixed long intervals fail when interval type is larger than time type
+       (bug #1031).
+- FIX: Fixed Round Robin check missing when in tick-less mode (bug #1030).
+- FIX: Fixed RCC_AHB1ENR_BKPSRAMEN not present in all STMF4xx devices
+       (bug #1029).
+- FIX: Fixed MPU fix #1027 broke stack checking on Cortex-M devices without
+       MPU (bug #1028).
 - FIX: Fixed MPU setup missing on thread start (bug #1027).
 - FIX: Fixed invalid I2C4 DMAs for STM32F76x (bug #1026).
 - FIX: Fixed invalid STM32_UART7_RX_DMA_CHN for STM32F469 (bug #1025).
@@ -97,6 +134,8 @@
 - FIX: Fixed invalid AXI errata fix for STM32H7xx (bug #1014).
 - FIX: Fixed invalid ADCD3 initialization in STM32 ADCv3 driver (bug #1013).
 - FIX: Fixed wrong license restriction check in Nil (bug #1011).
+- FIX: Fixed incorrect pointer type in lwipthread.c low_level_input causes
+       panic on packet reception (bug #1009).
 
 *** 18.2.2 ***
 - NEW: Added analog watchdog functionality to STM32 ADCv2 driver.

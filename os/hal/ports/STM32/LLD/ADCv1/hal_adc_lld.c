@@ -61,6 +61,7 @@ static void adc_lld_stop_adc(ADC_TypeDef *adc) {
     adc->CR |= ADC_CR_ADSTP;
     while (adc->CR & ADC_CR_ADSTP)
       ;
+    adc->IER = 0;
   }
 }
 
@@ -98,8 +99,7 @@ static void adc_lld_serve_rx_interrupt(ADCDriver *adcp, uint32_t flags) {
 /* Driver interrupt handlers.                                                */
 /*===========================================================================*/
 
-#if (STM32_ADC_USE_ADC1 && (STM32_ADC1_IRQ_SHARED_WITH_EXTI == FALSE)) ||   \
-    defined(__DOXYGEN__)
+#if STM32_ADC_USE_ADC1 || defined(__DOXYGEN__)
 #if !defined(STM32_ADC1_HANDLER)
 #error "STM32_ADC1_HANDLER not defined"
 #endif
@@ -145,11 +145,9 @@ void adc_lld_init(void) {
                   STM32_DMA_CR_MINC        | STM32_DMA_CR_TCIE        |
                   STM32_DMA_CR_DMEIE       | STM32_DMA_CR_TEIE;
 
-#if STM32_ADC1_IRQ_SHARED_WITH_EXTI == FALSE
-  /* The shared vector is initialized on driver initialization and never
+  /* The vector is initialized on driver initialization and never
      disabled.*/
   nvicEnableVector(12, STM32_ADC_ADC1_IRQ_PRIORITY);
-#endif
 #endif
 
   /* Calibration procedure.*/
